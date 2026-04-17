@@ -136,10 +136,7 @@ const commits = execSync(`git log v${releaseConfig.previousVersion}..HEAD --form
     const match = line.match(commitLogPattern);
     if (!match) return null;
     const [, type, scope, subject] = match;
-    const linked = subject.replace(
-      /#(\d+)/g,
-      '[#$1](https://github.com/cpbuddy/issues/$1)',
-    );
+    const linked = subject.replace(/#(\d+)/g, '[#$1](https://github.com/cpbuddy/issues/$1)');
     return scope ? `- **${type}**${scope}: ${linked}` : `- **${type}**: ${linked}`;
   })
   .filter(Boolean);
