@@ -14,12 +14,10 @@ import { ProblemView } from '@/components/problemView';
 import { ConfigProvider, useConfigState } from '@/context/ConfigContext';
 import { ProblemProvider, useProblemState } from '@/context/ProblemContext';
 import langEn from '@/l10n/en.json';
-import langZh from '@/l10n/zh.json';
 
 i18n.use(initReactI18next).init({
   resources: {
     en: { translation: langEn },
-    zh: { translation: langZh },
   },
   fallbackLng: 'en',
   interpolation: { escapeValue: false },
