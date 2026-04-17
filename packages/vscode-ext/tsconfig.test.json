@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "out",
+    "lib": ["ES2022"],
+    "types": ["node", "vitest/globals"],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@t/*": ["./tests/*"],
+    }
+  },
+  "include": ["src", "tests"],
+  "references": [ { "path": "../core" }, { "path": "../vscode-webview" }]
+}

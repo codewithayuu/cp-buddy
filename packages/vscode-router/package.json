@@ -1,0 +1,30 @@
+{
+  "name": "@cpbuddy/vscode-router",
+  "version": "0.7.6",
+  "private": true,
+  "type": "module",
+  "license": "AGPL-3.0-only",
+  "main": "./src/index.ts",
+  "scripts": {
+    "compile": "webpack --mode production",
+    "watch": "webpack --watch --mode development",
+    "clean": "rimraf dist out"
+  },
+  "dependencies": {
+    "@cpbuddy/core": "workspace:*",
+    "@hono/node-server": "^1.19.14",
+    "@hono/node-ws": "^1.3.0",
+    "commander": "^14.0.3",
+    "hono": "^4.12.14",
+    "proper-lockfile": "^4.1.2",
+    "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "@types/node": "~22.19.7",
+    "@types/proper-lockfile": "^4.1.4",
+    "swc-loader": "^0.2.7",
+    "tsconfig-paths-webpack-plugin": "^4.2.0",
+    "webpack": "^5.106.1",
+    "webpack-cli": "^7.0.2"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "amodio.tsl-problem-matcher",
+    "ms-vscode.extension-test-runner",
+    "biomejs.biome",
+    "redhat.vscode-yaml",
+    "vitest.explorer"
+  ]
+}

@@ -1,0 +1,61 @@
+import type { DragDropMsg, TestcaseId } from '@cpbuddy/core';
+import { inject, injectable } from 'tsyringe';
+import type { ICrypto } from '@/application/ports/node/ICrypto';
+import type { IFileSystem } from '@/application/ports/node/IFileSystem';
+import type { IPath } from '@/application/ports/node/IPath';
+import type { IProblemRepository } from '@/application/ports/problems/IProblemRepository';
+import type { IProblemService } from '@/application/ports/problems/IProblemService';
+import type { IActivePathService } from '@/application/ports/vscode/IActivePathService';
+import type { ISettings } from '@/application/ports/vscode/ISettings';
+import type { IMsgHandle } from '@/application/useCases/webview/msgHandle';
+import { TOKENS } from '@/composition/tokens';
+import { TestcaseScanner } from '@/domain/services/TestcaseScanner';
+
+@injectable()
+export class DragDrop implements IMsgHandle<DragDropMsg> {
+  public constructor(
+    @inject(TOKENS.crypto) private readonly crypto: ICrypto,
+    @inject(TOKENS.fileSystem) private readonly fs: IFileSystem,
+    @inject(TOKENS.path) private readonly path: IPath,
+    @inject(TOKENS.problemRepository) protected readonly repo: IProblemRepository,
+    @inject(TOKENS.problemService) private readonly problemService: IProblemService,
+    @inject(TOKENS.settings) private readonly settings: ISettings,
+    @inject(TOKENS.activePathService) private readonly activePath: IActivePathService,
+    @inject(TestcaseScanner) private readonly testcaseScanner: TestcaseScanner,
+  ) {}
+
+  public async exec(msg: DragDropMsg): Promise<void> {
+    const activePath = this.activePath.getActivePath();
+    if (!activePath) throw new Error('Active path is required');
+    const backgroundProblem = await this.repo.loadByPath(activePath, true);
+    if (!backgroundProblem) throw new Error('Could not load or create problem');
+    const { problem } = backgroundProblem;
+
+    for (const item of msg.items) {
+      const isDir = await this.fs
+        .stat(item)
+        .then((s) => s.isDirectory())
+        .catch(() => false);
+      if (isDir) {
+        this.problemService.applyTestcases(problem, await this.testcaseScanner.fromFolder(item));
+        break;
+      }
+      const ext = this.path.extname(item).toLowerCase();
+      if (ext === '.zip') {
+        this.problemService.applyTestcases(
+          problem,
+          await this.testcaseScanner.fromZip(problem.src.path, item),
+        );
+        break;
+      }
+      const isIoFile =
+        this.settings.problem.inputFileExtensionList.includes(ext) ||
+        this.settings.problem.outputFileExtensionList.includes(ext);
+      if (isIoFile) {
+        const testcaseId = this.crypto.randomUUID() as TestcaseId;
+        const testcase = await this.testcaseScanner.fromFile(item);
+        problem.addTestcase(testcaseId, testcase);
+      }
+    }
+  }
+}

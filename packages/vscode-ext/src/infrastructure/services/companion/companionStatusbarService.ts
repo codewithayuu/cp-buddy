@@ -1,0 +1,78 @@
+import { EventEmitter } from 'node:events';
+import { inject, injectable } from 'tsyringe';
+import type TypedEventEmitter from 'typed-emitter';
+import type { ILogger } from '@/application/ports/vscode/ILogger';
+import type { ITranslator } from '@/application/ports/vscode/ITranslator';
+import type { IUi, StatusBarController } from '@/application/ports/vscode/IUi';
+import { TOKENS } from '@/composition/tokens';
+import type { BatchList } from '@/infrastructure/services/companion/companion';
+import type { RouterStatus } from '@/infrastructure/services/companion/companionCommunicationService';
+
+type CompanionStatusbarEvents = {
+  click: () => void;
+};
+
+@injectable()
+export class CompanionStatusbarService {
+  private statusBarController: StatusBarController;
+  public readonly signals = new EventEmitter() as TypedEventEmitter<CompanionStatusbarEvents>;
+
+  public constructor(
+    @inject(TOKENS.logger) private readonly logger: ILogger,
+    @inject(TOKENS.translator) private readonly translator: ITranslator,
+    @inject(TOKENS.ui) private readonly ui: IUi,
+  ) {
+    this.logger = this.logger.withScope('companionStatusBar');
+    this.statusBarController = this.ui.showStatusbar('companion', () => this.signals.emit('click'));
+  }
+
+  public update(status: RouterStatus, batches: BatchList) {
+    this.logger.debug('Updating companion status bar', { status, batchCount: batches.size });
+    if (status === 'OFFLINE') {
+      return this.statusBarController.update(
+        this.translator.t('CPBuddy: Offline'),
+        this.translator.t('Click to reconnect'),
+        'error',
+      );
+    }
+    if (status === 'CONNECTING') {
+      return this.statusBarController.update(
+        this.translator.t('CPBuddy: Connecting...'),
+        this.translator.t('Attempting to establish connection'),
+        'warn',
+      );
+    }
+
+    if (batches.size === 0) {
+      const text = this.translator.t('CPBuddy Companion');
+      const tooltip = this.translator.t('No batches to claim');
+      return this.statusBarController.update(text, tooltip, 'normal');
+    }
+
+    if (batches.size === 1) {
+      const problems = Array.from(batches.values())[0];
+      const text = this.translator.t('{count} problem(s) available', { count: problems.length });
+      const tooltip = problems
+        .map(({ interactive, timeLimit, memoryLimit, input, output, name, tests, url }) => {
+          const details = [];
+          if (interactive) details.push(this.translator.t('interactive'));
+          details.push(`${timeLimit}ms`);
+          details.push(`${memoryLimit}MB`);
+          details.push(this.translator.t('{count} test(s)', { count: tests.length }));
+          if (input.fileName)
+            details.push(this.translator.t('input: {fileName}', { fileName: input.fileName }));
+          if (output.fileName)
+            details.push(this.translator.t('output: {fileName}', { fileName: output.fileName }));
+          return `- **[${name}](${url})** (${details.join(', ')})`;
+        })
+        .join('\n');
+      return this.statusBarController.update(text, tooltip, 'warn');
+    }
+
+    const text = this.translator.t('{count} batches to claim', { count: batches.size });
+    const tooltip = Array.from(batches.values())
+      .map((problems) => `- **${problems.length} problem(s)** (${problems[0].name}, ...)`)
+      .join('\n');
+    this.statusBarController.update(text, tooltip, 'warn');
+  }
+}

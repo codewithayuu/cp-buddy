@@ -1,0 +1,272 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      force_publish:
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  packages: write
+  issues: write
+  id-token: write
+  attestations: write
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Setup Node and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+      - name: Run lint
+        run: pnpm lint
+      - name: Check translations
+        run: pnpm check-translations
+      - name: Type check
+        run: pnpm typecheck
+
+  test:
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Setup Node and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+      - name: Run tests
+        run: pnpm test
+
+  build:
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.versions.outputs.version }}
+      version_changed: ${{ steps.versions.outputs.version_changed }}
+      pre_release: ${{ steps.versions.outputs.pre_release }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+          submodules: true
+      - name: Setup Node and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Detect version changes
+        id: versions
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        run: |
+          echo "::group::Detecting version"
+          CURRENT_VERSION=$(node -p "require('./.cpbuddy-release.json').version")
+          PREV_VERSION=$(git show HEAD^:.cpbuddy-release.json 2>/dev/null | node -p "JSON.parse(require('fs').readFileSync(0, 'utf-8')).version" || echo "0.0.0")
+          PRE_RELEASE=$(node -p "require('./.cpbuddy-release.json').preRelease || false")
+
+          echo "Current: $CURRENT_VERSION, Previous: $PREV_VERSION, Pre-release: $PRE_RELEASE"
+          echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "pre_release=$PRE_RELEASE" >> $GITHUB_OUTPUT
+
+          VERSION_CHANGED=false
+          if [ "$CURRENT_VERSION" != "$PREV_VERSION" ]; then
+            VERSION_CHANGED=true
+            echo "Version change detected via git diff."
+          elif [ "${{ github.event.inputs.force_publish }}" == "true" ]; then
+            VERSION_CHANGED=true
+            echo "Version change forced via manual input."
+          fi
+
+          echo "version_changed=$VERSION_CHANGED" >> $GITHUB_OUTPUT
+          echo "Version changed: $VERSION_CHANGED"
+          echo "::endgroup::"
+
+      - name: Build all packages
+        run: |
+          echo "::group::Building packages"
+          pnpm package
+          echo "::endgroup::"
+        env:
+          BUILD_TYPE: Auto Build
+          PRE_RELEASE: ${{ steps.versions.outputs.pre_release }}
+
+      - name: Check Artifacts
+        run: |
+          echo "::group::Verifying artifacts"
+          ls -lh dist/
+          echo "::endgroup::"
+
+      - name: Build Summary
+        run: |
+          echo "## 📦 Build Artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Summary table
+          echo "### Overview" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| File | Size |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|------|" >> $GITHUB_STEP_SUMMARY
+          TOTAL_SIZE=0
+          for f in dist/*; do
+            FILENAME=$(basename "$f")
+            SIZE_BYTES=$(stat --format="%s" "$f")
+            TOTAL_SIZE=$((TOTAL_SIZE + SIZE_BYTES))
+            SIZE_HUMAN=$(numfmt --to=iec-i --suffix=B --format="%.2f" "$SIZE_BYTES")
+            echo "| \`$FILENAME\` | $SIZE_HUMAN |" >> $GITHUB_STEP_SUMMARY
+          done
+          TOTAL_HUMAN=$(numfmt --to=iec-i --suffix=B --format="%.2f" "$TOTAL_SIZE")
+          echo "| **Total** | **$TOTAL_HUMAN** |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Detailed contents of each archive
+          echo "### Archive Contents" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          TEMP_DIR=$(mktemp -d)
+
+          for f in dist/*; do
+            FILENAME=$(basename "$f")
+            SIZE_HUMAN=$(numfmt --to=iec-i --suffix=B --format="%.2f" "$(stat --format="%s" "$f")")
+
+            echo "<details>" >> $GITHUB_STEP_SUMMARY
+            echo "<summary><code>$FILENAME</code> ($SIZE_HUMAN)</summary>" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+
+            EXTRACT_DIR="$TEMP_DIR/$FILENAME"
+            mkdir -p "$EXTRACT_DIR"
+
+            # Try to extract as zip (vsix, zip, crx are all zip-based)
+            if unzip -q "$f" -d "$EXTRACT_DIR" 2>/dev/null; then
+              echo '```' >> $GITHUB_STEP_SUMMARY
+              # Use tree if available, with file sizes
+              if command -v tree &>/dev/null; then
+                tree -h --du "$EXTRACT_DIR" | sed "s|$EXTRACT_DIR|$FILENAME|" >> $GITHUB_STEP_SUMMARY
+              else
+                # Fallback: use find to produce a tree-like output
+                (cd "$EXTRACT_DIR" && find . -print | sort | sed -e 's/[^/]*\//│   /g' -e 's/│   \([^│]\)/├── \1/') >> $GITHUB_STEP_SUMMARY
+              fi
+              echo '```' >> $GITHUB_STEP_SUMMARY
+
+              # File count and total uncompressed size
+              FILE_COUNT=$(find "$EXTRACT_DIR" -type f | wc -l)
+              UNCOMPRESSED=$(du -sh "$EXTRACT_DIR" | cut -f1)
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "> **$FILE_COUNT** files, **$UNCOMPRESSED** uncompressed" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "*Unable to extract (not a recognized archive format)*" >> $GITHUB_STEP_SUMMARY
+            fi
+
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "</details>" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          done
+
+          rm -rf "$TEMP_DIR"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: cpbuddy-artifacts
+          path: dist/*
+          if-no-files-found: error
+
+      - name: Generate Provenance
+        if: |
+          (github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event.action != 'closed') &&
+          (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: dist/*
+
+  publish:
+    needs: [build]
+    if: needs.build.outputs.version_changed == 'true' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          submodules: true
+      - name: Setup Node and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Create tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag "v${{ needs.build.outputs.version }}"
+          git push origin "v${{ needs.build.outputs.version }}"
+      - name: Download artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: cpbuddy-artifacts
+          path: dist/
+
+      - name: Check Artifacts
+        run: |
+          echo "::group::Verifying artifacts"
+          ls -lh dist/
+          echo "::endgroup::"
+
+      - name: Publish VS Code
+        continue-on-error: true
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: |
+          echo "::group::Publishing to VS Code Marketplace"
+          VERSION="${{ needs.build.outputs.version }}"
+          pnpm -C packages/vscode-ext exec vsce publish --allow-star-activation --no-dependencies -i ../../dist/cpbuddy-$VERSION.vsix
+          echo "::endgroup::"
+
+      - name: Publish Browser
+        continue-on-error: true
+        env:
+          EDGE_PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}
+          EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
+          EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}
+          EDGE_SKIP_SUBMIT_REVIEW: ${{ secrets.EDGE_SKIP_SUBMIT_REVIEW }}
+          FIREFOX_EXTENSION_ID: ${{ secrets.FIREFOX_EXTENSION_ID }}
+          FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}
+          FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
+          FIREFOX_CHANNEL: ${{ secrets.FIREFOX_CHANNEL }}
+        run: |
+          echo "::group::Publishing to Browser Stores"
+          VERSION="${{ needs.build.outputs.version }}"
+          pnpm -C packages/browser-ext exec wxt submit \
+            --firefox-zip ../../dist/cpbuddy-submit-$VERSION-firefox.zip \
+            --firefox-sources-zip ../../dist/cpbuddy-submit-$VERSION-sources.zip \
+            --edge-zip ../../dist/cpbuddy-submit-$VERSION-chrome.zip
+          echo "::endgroup::"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.build.outputs.version }}
+          name: v${{ needs.build.outputs.version }}
+          files: ./dist/*
+          prerelease: ${{ needs.build.outputs.pre_release }}
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Move cards in project
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECTS_GITHUB_TOKEN }}
+          PRE_RELEASE: ${{ needs.build.outputs.pre_release }}
+        run: bash scripts/move-cards.sh

@@ -1,0 +1,61 @@
+import type { UUID } from 'node:crypto';
+
+interface TCVerdict {
+  name: string;
+  fullName: string;
+  color: string;
+}
+
+type TCIO = { useFile: true; path: string } | { useFile: false; data: string };
+
+interface TCResult {
+  verdict: TCVerdict;
+  time?: number;
+  memory?: number;
+  stdout: TCIO;
+  stderr: TCIO;
+  msg?: string;
+}
+
+interface TC {
+  stdin: TCIO;
+  answer: TCIO;
+  isExpand: boolean;
+  isDisabled: boolean;
+  result?: TCResult;
+}
+
+interface FileWithHash {
+  path: string;
+  hash?: string;
+}
+
+interface BFCompare {
+  generator?: FileWithHash;
+  bruteForce?: FileWithHash;
+  running: boolean;
+  msg: string;
+}
+
+interface CompilationSettings {
+  compiler?: string;
+  compilerArgs?: string;
+  runner?: string;
+  runnerArgs?: string;
+}
+
+export interface Problem {
+  version: string;
+  name: string;
+  url?: string;
+  tcs: Record<UUID, TC>;
+  tcOrder: UUID[];
+  timeLimit: number;
+  memoryLimit: number;
+  src: FileWithHash;
+  checker?: FileWithHash;
+  interactor?: FileWithHash;
+  bfCompare?: BFCompare;
+  timeElapsed: number;
+  compilationSettings?: CompilationSettings;
+}

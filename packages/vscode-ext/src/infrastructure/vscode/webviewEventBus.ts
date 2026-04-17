@@ -1,0 +1,99 @@
+import { EventEmitter } from 'node:events';
+import type {
+  IWebviewBackgroundProblem,
+  IWebviewProblem,
+  ProblemId,
+  TestcaseId,
+  WebviewAddTestcasePayload,
+  WebviewConfig,
+  WebviewDeleteTestcasePayload,
+  WebviewEvent,
+  WebviewPatchMetaPayload,
+  WebviewPatchStressTestPayload,
+  WebviewPatchTestcasePayload,
+  WebviewPatchTestcaseResultPayload,
+} from '@cpbuddy/core';
+import { inject, injectable } from 'tsyringe';
+import type TypedEventEmitter from 'typed-emitter';
+import type { ILogger } from '@/application/ports/vscode/ILogger';
+import type { IWebviewEventBus } from '@/application/ports/vscode/IWebviewEventBus';
+import { TOKENS } from '@/composition/tokens';
+
+type WebviewEvents = {
+  message: (payload: WebviewEvent) => void;
+};
+
+@injectable()
+export class WebviewEventBusAdapter implements IWebviewEventBus {
+  private readonly emitter = new EventEmitter() as TypedEventEmitter<WebviewEvents>;
+
+  public constructor(@inject(TOKENS.logger) private readonly logger: ILogger) {
+    this.logger = this.logger.withScope('webviewEventBusAdapter');
+  }
+
+  public onMessage(handler: (data: WebviewEvent) => void) {
+    this.emitter.on('message', handler);
+  }
+
+  public openSubmitDialog(problemId: ProblemId): void {
+    this.logger.debug('Emitting openSubmitDialog event', { problemId });
+    this.emitter.emit('message', { type: 'OPEN_SUBMIT_DIALOG', problemId });
+  }
+
+  public fullProblem(problemId: ProblemId, payload: IWebviewProblem): void {
+    this.logger.debug('Emitting fullProblem event', { problemId, payload });
+    this.emitter.emit('message', { type: 'FULL_PROBLEM', problemId, payload });
+  }
+  public patchMeta(problemId: ProblemId, payload: WebviewPatchMetaPayload): void {
+    this.logger.debug('Emitting patchMeta event', { problemId, payload });
+    this.emitter.emit('message', { type: 'PATCH_META', problemId, payload });
+  }
+  public patchStressTest(problemId: ProblemId, payload: WebviewPatchStressTestPayload): void {
+    this.logger.debug('Emitting patchStressTest event', { problemId, payload });
+    this.emitter.emit('message', { type: 'PATCH_STRESS_TEST', problemId, payload });
+  }
+  public addTestcase(
+    problemId: ProblemId,
+    testcaseId: TestcaseId,
+    payload: WebviewAddTestcasePayload,
+  ): void {
+    this.logger.debug('Emitting addTestcase event', { problemId, testcaseId, payload });
+    this.emitter.emit('message', { type: 'ADD_TESTCASE', problemId, testcaseId, payload });
+  }
+  public deleteTestcase(
+    problemId: ProblemId,
+    testcaseId: TestcaseId,
+    payload: WebviewDeleteTestcasePayload,
+  ): void {
+    this.logger.debug('Emitting deleteTestcase event', { problemId, testcaseId, payload });
+    this.emitter.emit('message', { type: 'DELETE_TESTCASE', problemId, testcaseId, payload });
+  }
+  public patchTestcase(
+    problemId: ProblemId,
+    testcaseId: TestcaseId,
+    payload: WebviewPatchTestcasePayload,
+  ): void {
+    this.logger.debug('Emitting patchTestcase event', { problemId, testcaseId, payload });
+    this.emitter.emit('message', { type: 'PATCH_TESTCASE', problemId, testcaseId, payload });
+  }
+  public patchTestcaseResult(
+    problemId: ProblemId,
+    testcaseId: TestcaseId,
+    payload: WebviewPatchTestcaseResultPayload,
+  ): void {
+    this.logger.debug('Emitting patchTestcaseResult event', { problemId, testcaseId, payload });
+    this.emitter.emit('message', { type: 'PATCH_TESTCASE_RESULT', problemId, testcaseId, payload });
+  }
+  public background(payload: IWebviewBackgroundProblem[]): void {
+    this.logger.debug('Emitting background event', { payload });
+    this.emitter.emit('message', { type: 'BACKGROUND', payload });
+  }
+  public noProblem(canImport: boolean): void {
+    this.logger.debug('Emitting noProblem event', { canImport });
+    this.emitter.emit('message', { type: 'NO_PROBLEM', canImport });
+  }
+  public configChange(payload: Partial<WebviewConfig>): void {
+    this.logger.debug('Emitting configChange event', { payload });
+    this.emitter.emit('message', { type: 'CONFIG_CHANGE', payload });
+  }
+}

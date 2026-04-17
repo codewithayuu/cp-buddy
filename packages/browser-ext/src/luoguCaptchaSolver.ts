@@ -1,0 +1,94 @@
+import { onMessage } from '@b/messaging';
+import { env, InferenceSession, Tensor } from 'onnxruntime-web/wasm';
+import { browser } from 'wxt/browser';
+
+let sessionPromise: Promise<InferenceSession> | null = null;
+let isRegistered = false;
+
+const getSession = (): Promise<InferenceSession> => {
+  if (sessionPromise) return sessionPromise;
+
+  const wasmFile = browser.runtime.getURL('/assets/onnx-wasm/ort-wasm-simd-threaded.wasm');
+  const wasmPath = `${wasmFile.split('/').slice(0, -1).join('/')}/`;
+  env.wasm.wasmPaths = wasmPath;
+  env.wasm.numThreads = 1;
+
+  sessionPromise = InferenceSession.create(browser.runtime.getURL('/assets/model.onnx'));
+  return sessionPromise;
+};
+
+const decodeImage = async (imageDataUrl: string): Promise<ImageBitmap> => {
+  const response = await fetch(imageDataUrl);
+  const blob = await response.blob();
+  return await createImageBitmap(blob);
+};
+
+const createCanvas = (width: number, height: number): OffscreenCanvas | HTMLCanvasElement => {
+  if (typeof OffscreenCanvas !== 'undefined') return new OffscreenCanvas(width, height);
+  if (typeof document !== 'undefined') {
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    return canvas;
+  }
+  throw new Error('Canvas API is unavailable in current extension context');
+};
+
+const encodeInput = async (imageDataUrl: string): Promise<Tensor> => {
+  const width = 90;
+  const height = 35;
+  const bitmap = await decodeImage(imageDataUrl);
+
+  const canvas = createCanvas(width, height);
+  const ctx = canvas.getContext('2d');
+  if (!ctx || !('drawImage' in ctx) || !('getImageData' in ctx))
+    throw new Error('Failed to get 2D canvas context');
+
+  ctx.drawImage(bitmap, 0, 0, width, height);
+  bitmap.close();
+
+  const imageData = ctx.getImageData(0, 0, width, height);
+  const pixels = imageData.data;
+
+  const floatData = new Float32Array(height * width);
+  for (let i = 0; i < height * width; i++) {
+    const r = pixels[i * 4];
+    const g = pixels[i * 4 + 1];
+    const b = pixels[i * 4 + 2];
+    const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+    floatData[i] = gray / 255.0;
+  }
+
+  return new Tensor('float32', floatData, [1, height, width, 1]);
+};
+
+const solveLuoguCaptcha = async (imageDataUrl: string): Promise<string> => {
+  const session = await getSession();
+  const inputTensor = await encodeInput(imageDataUrl);
+  const results = await session.run({ [session.inputNames[0]]: inputTensor });
+
+  const outputData = results[session.outputNames[0]].data as Float32Array;
+  let answer = '';
+  for (let i = 0; i < 4; i++) {
+    let maxVal = -Infinity;
+    let maxIdx = 0;
+    for (let j = 0; j < 256; j++) {
+      const val = outputData[i * 256 + j];
+      if (val > maxVal) {
+        maxVal = val;
+        maxIdx = j;
+      }
+    }
+    answer += String.fromCharCode(maxIdx);
+  }
+  return answer;
+};
+
+export const registerLuoguCaptchaSolver = (): void => {
+  if (isRegistered) return;
+  isRegistered = true;
+
+  onMessage('solveLuoguCaptcha', async ({ data }) => {
+    return await solveLuoguCaptcha(data);
+  });
+};
