@@ -2,7 +2,7 @@
   "name": "cpbuddy",
   "displayName": "CPBuddy",
   "description": "The next generation of CPH.",
-  "version": "0.7.6",
+  "version": "1.0.0",
   "type": "module",
   "license": "AGPL-3.0-only",
   "publisher": "cpbuddy",
