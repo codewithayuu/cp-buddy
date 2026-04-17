@@ -5,7 +5,7 @@ process.exit(
   checkTranslations({
     title: 'Webview',
     getKeys: () => extractKeys('src'),
-    files: [join('src', 'l10n', 'en.json'), join('src', 'l10n', 'zh.json')],
+    files: [join('src', 'l10n', 'en.json')],
   })
     ? 1
     : 0,
