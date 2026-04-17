@@ -25,6 +25,7 @@
   "problemActions.easterEgg": "Easter egg",
   "problemActions.runAllTestcases": "Run All Test Cases",
   "problemActions.stopTestcases": "Stop Test Case",
+  "problemActions.settings": "Settings",
   "problemActions.stressTest": "Stress Test",
   "problemActions.stressTestDialog.bruteForce": "Brute Force",
   "problemActions.stressTestDialog.button.chooseBruteForce": "Choose Brute Force",
