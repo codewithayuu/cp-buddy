@@ -116,8 +116,8 @@ const PopupInner = () => {
             const tests = [];
             for (let i = 0; i < inputs.length; i++) {
               tests.push({
-                input: inputs[i].innerText,
-                output: outputs[i].innerText,
+                input: (inputs[i] as HTMLElement).innerText,
+                output: (outputs[i] as HTMLElement).innerText,
               });
             }
 
