@@ -1,0 +1,165 @@
+import type { IWebviewTestcase, ProblemId, TestcaseId } from '@cpbuddy/core';
+import { VerdictName } from '@cpbuddy/core';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import type { SxProps, Theme } from '@mui/material/styles';
+import { type DragEvent, memo, useCallback, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { AcCongrats } from '@/components/acCongrats';
+import { CPBuddyFlex } from '@/components/base/cpbuddyFlex';
+import { ErrorBoundary } from '@/components/base/errorBoundary';
+import { NoTestcases } from '@/components/noTestcases';
+import { TestcaseView } from '@/components/testcaseView';
+import { useConfigState } from '@/context/ConfigContext';
+import { useProblemDispatch } from '@/context/ProblemContext';
+
+interface InfoButtonProps {
+  sx?: SxProps<Theme>;
+  message: string;
+  onClick: () => void;
+}
+
+export const InfoButton = memo((props: InfoButtonProps) => {
+  return (
+    <Box sx={{ flex: 1, ...props.sx }}>
+      <Paper
+        onClick={props.onClick}
+        sx={{
+          py: 1,
+          cursor: 'pointer',
+          textAlign: 'center',
+          opacity: 0.5,
+          '&:hover': {
+            opacity: 1,
+          },
+          transition: 'all 0.2s',
+        }}
+      >
+        {props.message}
+      </Paper>
+    </Box>
+  );
+});
+
+interface TestcasesViewProps {
+  problemId: ProblemId;
+  testcaseOrder: TestcaseId[];
+  testcases: Record<TestcaseId, IWebviewTestcase>;
+}
+
+export const TestcasesView = memo(({ problemId, testcaseOrder, testcases }: TestcasesViewProps) => {
+  const { t } = useTranslation();
+  const { config } = useConfigState();
+  const dispatch = useProblemDispatch();
+  const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
+  const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
+  const draggedIdxRef = useRef<number | null>(null);
+  const dragOverIdxRef = useRef<number | null>(null);
+
+  const isAllAccepted = useMemo(() => {
+    return (
+      testcaseOrder.length > 0 &&
+      testcaseOrder.every(
+        (testcaseId) => testcases[testcaseId]?.result?.verdict.name === VerdictName.accepted,
+      )
+    );
+  }, [testcaseOrder, testcases]);
+
+  const handleDragStart = useCallback((idx: number, e: DragEvent) => {
+    const dragImage = document.createElement('div');
+    dragImage.style.opacity = '0';
+    document.body.appendChild(dragImage);
+    e.dataTransfer.setDragImage(dragImage, 0, 0);
+    setTimeout(() => document.body.removeChild(dragImage), 0);
+
+    draggedIdxRef.current = idx;
+    dragOverIdxRef.current = idx;
+    setDraggedIdx(idx);
+    setDragOverIdx(idx);
+  }, []);
+
+  const handleDragOver = useCallback((e: DragEvent, idx: number) => {
+    e.preventDefault();
+    if (dragOverIdxRef.current !== idx) {
+      dragOverIdxRef.current = idx;
+      setDragOverIdx(idx);
+    }
+  }, []);
+
+  const handleDragEnd = useCallback(() => {
+    const dragged = draggedIdxRef.current;
+    const over = dragOverIdxRef.current;
+    if (dragged !== null && over !== null && dragged !== over)
+      dispatch({ type: 'reorderTestcase', problemId, fromIdx: dragged, toIdx: over });
+
+    draggedIdxRef.current = null;
+    dragOverIdxRef.current = null;
+    setDraggedIdx(null);
+    setDragOverIdx(null);
+  }, [dispatch, problemId]);
+
+  const displayOrder = useMemo(() => {
+    const order = testcaseOrder.map((_, idx) => idx);
+    if (draggedIdx === null || dragOverIdx === null) return order;
+
+    const [removed] = order.splice(draggedIdx, 1);
+    order.splice(dragOverIdx, 0, removed);
+    return order;
+  }, [testcaseOrder, draggedIdx, dragOverIdx]);
+
+  return (
+    <CPBuddyFlex column>
+      {testcaseOrder.length ? (
+        <>
+          {config.showAcGif && isAllAccepted ? <AcCongrats /> : null}
+          <Box sx={{ width: '100%' }}>
+            {displayOrder.map((originalIdx, displayIdx) => {
+              const testcaseId = testcaseOrder[originalIdx];
+              const testcase = testcases[testcaseId];
+              if (
+                !testcase ||
+                (testcase.result?.verdict &&
+                  config.hiddenStatuses?.includes(testcase.result?.verdict.name))
+              )
+                return null;
+
+              return (
+                <ErrorBoundary key={testcaseId}>
+                  <TestcaseView
+                    problemId={problemId}
+                    testcaseId={testcaseId}
+                    testcase={testcase}
+                    isExpand={testcase.isExpand && draggedIdx === null}
+                    idx={originalIdx}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                    isDragging={draggedIdx === originalIdx}
+                    onDragOver={(e) => handleDragOver(e, displayIdx)}
+                  />
+                </ErrorBoundary>
+              );
+            })}
+          </Box>
+        </>
+      ) : (
+        <NoTestcases />
+      )}
+      <CPBuddyFlex smallGap>
+        <InfoButton
+          message={t('testcasesView.addTestcaseHint')}
+          onClick={() => dispatch({ type: 'addTestcase', problemId })}
+        />
+        <InfoButton
+          sx={{ display: { xs: 'none', lg: 'block' } }}
+          message={t('testcasesView.loadFolderHint')}
+          onClick={() => dispatch({ type: 'loadTestcases', problemId, file: false })}
+        />
+        <InfoButton
+          sx={{ display: { xs: 'none', md: 'block' } }}
+          message={t('testcasesView.loadZipHint')}
+          onClick={() => dispatch({ type: 'loadTestcases', problemId, file: true })}
+        />
+      </CPBuddyFlex>
+    </CPBuddyFlex>
+  );
+});

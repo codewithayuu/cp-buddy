@@ -1,0 +1,98 @@
+import {
+  accessSync,
+  createReadStream,
+  createWriteStream,
+  mkdirSync,
+  type RmOptions,
+  writeFileSync,
+} from 'node:fs';
+import { access, copyFile, mkdir, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import type { Readable, Writable } from 'node:stream';
+import { inject, injectable } from 'tsyringe';
+import type { IFileSystem } from '@/application/ports/node/IFileSystem';
+import type { IPath } from '@/application/ports/node/IPath';
+import { TOKENS } from '@/composition/tokens';
+
+@injectable()
+export class FileSystemAdapter implements IFileSystem {
+  public constructor(@inject(TOKENS.path) private readonly path: IPath) {}
+
+  public async readRawFile(path: string): Promise<Buffer<ArrayBuffer>> {
+    return readFile(path);
+  }
+
+  public async readFile(path: string, encoding: BufferEncoding = 'utf8'): Promise<string> {
+    return readFile(path, { encoding });
+  }
+
+  public async safeWriteFile(path: string, data: string | Uint8Array): Promise<void> {
+    await mkdir(this.path.dirname(path), { recursive: true });
+    await writeFile(path, data);
+  }
+
+  public safeCreateFile(path: string): void {
+    mkdirSync(this.path.dirname(path), { recursive: true });
+    writeFileSync(path, '');
+  }
+
+  public async exists(path: string): Promise<boolean> {
+    try {
+      await access(path);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  public existsSync(path: string): boolean {
+    try {
+      accessSync(path);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  public async mkdir(path: string): Promise<void> {
+    await mkdir(path, { recursive: true });
+  }
+
+  public async readdir(path: string): Promise<string[]> {
+    return readdir(path, { encoding: 'utf8' });
+  }
+
+  public async stat(
+    path: string,
+  ): Promise<{ size: number; isFile(): boolean; isDirectory(): boolean }> {
+    const stats = await stat(path);
+    return {
+      size: stats.size,
+      isFile: () => stats.isFile(),
+      isDirectory: () => stats.isDirectory(),
+    };
+  }
+
+  public async copyFile(src: string, dest: string): Promise<void> {
+    await mkdir(this.path.dirname(dest), { recursive: true });
+    await copyFile(src, dest);
+  }
+
+  public async rm(path: string, options?: RmOptions): Promise<void> {
+    await rm(path, options);
+  }
+
+  public async walk(path: string): Promise<string[]> {
+    return readdir(path, { encoding: 'utf8', recursive: true }).then((files) =>
+      files.map((file) => this.path.resolve(path, file)),
+    );
+  }
+
+  public createReadStream(path: string): Readable {
+    return createReadStream(path);
+  }
+
+  public safeCreateWriteStream(path: string): Writable {
+    mkdirSync(this.path.dirname(path), { recursive: true });
+    return createWriteStream(path);
+  }
+}

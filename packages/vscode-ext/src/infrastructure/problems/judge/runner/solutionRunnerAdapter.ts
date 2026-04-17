@@ -1,0 +1,85 @@
+import { inject, injectable } from 'tsyringe';
+import { AbortReason, type IProcessExecutor } from '@/application/ports/node/IProcessExecutor';
+import type { ITempStorage } from '@/application/ports/node/ITempStorage';
+import type { IExecutionStrategyFactory } from '@/application/ports/problems/judge/runner/execution/IExecutionStrategyFactory';
+import type { IExecutionStrategy } from '@/application/ports/problems/judge/runner/execution/strategies/IExecutionStrategy';
+import type { ISolutionRunner } from '@/application/ports/problems/judge/runner/ISolutionRunner';
+import type { ILogger } from '@/application/ports/vscode/ILogger';
+import type { ISettings } from '@/application/ports/vscode/ISettings';
+import type { ITranslator } from '@/application/ports/vscode/ITranslator';
+import { TOKENS } from '@/composition/tokens';
+import {
+  type ExecutionContext,
+  ExecutionRejected,
+  type ExecutionResult,
+  type InteractiveExecutionResult,
+} from '@/domain/execution';
+
+@injectable()
+export class SolutionRunnerAdapter implements ISolutionRunner {
+  public constructor(
+    @inject(TOKENS.logger) private readonly logger: ILogger,
+    @inject(TOKENS.settings) private readonly settings: ISettings,
+    @inject(TOKENS.translator) private readonly translator: ITranslator,
+    @inject(TOKENS.processExecutor) private readonly executor: IProcessExecutor,
+    @inject(TOKENS.tempStorage) private readonly tmp: ITempStorage,
+    @inject(TOKENS.executionStrategyFactory)
+    private readonly factory: IExecutionStrategyFactory,
+  ) {
+    this.logger = this.logger.withScope('solutionRunner');
+  }
+
+  public async run(ctx: ExecutionContext, signal: AbortSignal): Promise<ExecutionResult> {
+    const strategy = this.getStrategy();
+    if (strategy instanceof Error) return strategy;
+    return strategy.execute(ctx, signal);
+  }
+
+  private getStrategy(): IExecutionStrategy | Error {
+    const { useRunner, useWrapper } = this.settings.run;
+    if (useRunner && useWrapper)
+      return new ExecutionRejected(
+        this.translator.t('Cannot use both external runner and wrapper at the same time'),
+      );
+    if (useRunner) return this.factory.create('external');
+    if (useWrapper) return this.factory.create('wrapper');
+    return this.factory.create('normal');
+  }
+
+  // Interactive problem only supports the normal running strategy
+  public async runInteractive(
+    ctx: ExecutionContext,
+    signal: AbortSignal,
+    interactorPath: string,
+  ): Promise<InteractiveExecutionResult> {
+    const timeoutMs = ctx.timeLimitMs + this.settings.run.timeAddition;
+
+    // Prepare input and output files
+    const intStdinPath = ctx.stdinPath;
+    const intStdoutPath = this.tmp.create(`solutionRunner.intStdoutPath`);
+
+    // Launch both processes with pipe
+    const { res1: solResult, res2: intResult } = await this.executor.executeWithPipe(
+      { cmd: ctx.cmd, timeoutMs, signal },
+      { cmd: [interactorPath, intStdinPath, intStdoutPath], timeoutMs, signal },
+    );
+    this.logger.debug('Interactor execution completed', {
+      solResult,
+      intResult,
+    });
+
+    if (solResult instanceof Error) return solResult;
+    if (intResult instanceof Error) return intResult;
+    return {
+      sol: {
+        ...solResult,
+        isUserAborted: solResult.abortReason === AbortReason.UserAbort,
+      },
+      int: {
+        ...intResult,
+        isUserAborted: intResult.abortReason === AbortReason.UserAbort,
+      },
+      feedbackPath: intStdoutPath,
+    };
+  }
+}

@@ -1,0 +1,70 @@
+import type { ToggleTestcaseFileMsg, WebviewTestcaseFileTypes } from '@cpbuddy/core';
+import { inject, injectable } from 'tsyringe';
+import type { IFileSystem } from '@/application/ports/node/IFileSystem';
+import type { IPath } from '@/application/ports/node/IPath';
+import type { IProblemRepository } from '@/application/ports/problems/IProblemRepository';
+import type { ISettings } from '@/application/ports/vscode/ISettings';
+import type { ITranslator } from '@/application/ports/vscode/ITranslator';
+import type { IUi } from '@/application/ports/vscode/IUi';
+import { BaseProblemUseCase } from '@/application/useCases/webview/problem/BaseProblemUseCase';
+import { TOKENS } from '@/composition/tokens';
+import type { BackgroundProblem } from '@/domain/entities/backgroundProblem';
+import { TestcaseIo } from '@/domain/entities/testcaseIo';
+import type { TestcaseIoService } from '@/infrastructure/problems/testcaseIoService';
+
+@injectable()
+export class ToggleTestcaseFile extends BaseProblemUseCase<ToggleTestcaseFileMsg> {
+  public constructor(
+    @inject(TOKENS.fileSystem) private readonly fs: IFileSystem,
+    @inject(TOKENS.path) private readonly path: IPath,
+    @inject(TOKENS.problemRepository) protected readonly repo: IProblemRepository,
+    @inject(TOKENS.testcaseIoService) protected readonly testcaseIoService: TestcaseIoService,
+    @inject(TOKENS.settings) private readonly settings: ISettings,
+    @inject(TOKENS.translator) private readonly translator: ITranslator,
+    @inject(TOKENS.ui) private readonly ui: IUi,
+  ) {
+    super(repo);
+  }
+
+  protected async performAction(
+    { problem }: BackgroundProblem,
+    msg: ToggleTestcaseFileMsg,
+  ): Promise<void> {
+    const testcase = problem.getTestcase(msg.testcaseId);
+    const fileIo = testcase[msg.label];
+    await fileIo.match(
+      async (path) => {
+        const stat = await this.fs.stat(path);
+        if (stat.size > this.settings.problem.maxInlineDataLength) {
+          this.ui.alert('error', this.translator.t('File too large to inline'));
+          return;
+        }
+        const data = await this.fs.readFile(path);
+        testcase[msg.label] = new TestcaseIo({ data });
+      },
+      async (data) => {
+        const ext = this.getDefaultExt(msg.label);
+        const defaultPath = this.path.resolve(
+          this.path.dirname(problem.src.path),
+          `${this.path.basename(problem.src.path, this.path.extname(problem.src.path))}-${msg.testcaseId + 1}${ext}`,
+        );
+        const path = await this.ui.saveDialog({
+          defaultPath,
+          title: this.translator.t('Select location to save'),
+        });
+        if (!path) return;
+        await this.fs.safeWriteFile(path, data);
+        testcase[msg.label] = new TestcaseIo({ path });
+      },
+    );
+  }
+
+  private getDefaultExt(label: WebviewTestcaseFileTypes): string {
+    const exts =
+      label === 'stdin'
+        ? this.settings.problem.inputFileExtensionList
+        : this.settings.problem.outputFileExtensionList;
+    if (exts.length === 0) throw new Error('Extension list is empty');
+    return exts[0];
+  }
+}

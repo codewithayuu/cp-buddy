@@ -1,0 +1,154 @@
+import type { IOverrides } from './interfaces';
+import type { ProblemId, TestcaseId } from './types';
+
+interface BaseMsg {
+  type: string;
+  problemId?: ProblemId;
+}
+interface ProblemBaseMsg extends BaseMsg {
+  problemId: ProblemId;
+}
+
+export interface CreateProblemMsg extends BaseMsg {
+  type: 'createProblem';
+}
+export interface ImportProblemMsg extends BaseMsg {
+  type: 'importProblem';
+}
+export interface InitMsg extends BaseMsg {
+  type: 'init';
+}
+export interface EditProblemDetailsMsg extends ProblemBaseMsg {
+  type: 'editProblemDetails';
+  name: string;
+  url: string | null;
+  overrides: IOverrides;
+}
+export interface DeleteProblemMsg extends ProblemBaseMsg {
+  type: 'deleteProblem';
+}
+export interface RunAllTestcasesMsg extends ProblemBaseMsg {
+  type: 'runAllTestcases';
+  forceCompile: boolean | null;
+}
+export interface StopTestcasesMsg extends ProblemBaseMsg {
+  type: 'stopTestcases';
+  testcaseId?: TestcaseId;
+}
+export interface AddTestcaseMsg extends ProblemBaseMsg {
+  type: 'addTestcase';
+}
+export interface LoadTestcasesMsg extends ProblemBaseMsg {
+  type: 'loadTestcases';
+  file: boolean;
+}
+export interface RunSingleTestcaseMsg extends ProblemBaseMsg {
+  type: 'runSingleTestcase';
+  testcaseId: TestcaseId;
+  forceCompile: boolean | null;
+}
+export interface ClearTestcaseStatusMsg extends ProblemBaseMsg {
+  type: 'clearTestcaseStatus';
+  testcaseId?: TestcaseId;
+}
+export type WebviewTestcaseFileTypes = 'stdin' | 'answer';
+export interface ChooseTestcaseFileMsg extends ProblemBaseMsg {
+  type: 'chooseTestcaseFile';
+  testcaseId: TestcaseId;
+  label: WebviewTestcaseFileTypes;
+}
+export interface SetTestcaseStringMsg extends ProblemBaseMsg {
+  type: 'setTestcaseString';
+  testcaseId: TestcaseId;
+  label: WebviewTestcaseFileTypes;
+  data: string;
+}
+export interface UpdateTestcaseMsg extends ProblemBaseMsg {
+  type: 'updateTestcase';
+  testcaseId: TestcaseId;
+  event: 'setDisable' | 'setExpand' | 'setAsAnswer';
+  value: boolean; // ignored when set as answer
+}
+export interface CompareTestcaseMsg extends ProblemBaseMsg {
+  type: 'compareTestcase';
+  testcaseId: TestcaseId;
+}
+export interface ToggleTestcaseFileMsg extends ProblemBaseMsg {
+  type: 'toggleTestcaseFile';
+  testcaseId: TestcaseId;
+  label: WebviewTestcaseFileTypes;
+}
+export interface DeleteTestcaseMsg extends ProblemBaseMsg {
+  type: 'deleteTestcase';
+  testcaseId: TestcaseId;
+}
+export interface ReorderTestcaseMsg extends ProblemBaseMsg {
+  type: 'reorderTestcase';
+  fromIdx: number;
+  toIdx: number;
+}
+export interface OpenFileMsg extends BaseMsg {
+  type: 'openFile';
+  path: string;
+}
+export interface OpenTestlibMsg extends BaseMsg {
+  type: 'openTestlib';
+}
+export type WebviewSrcFileTypes = 'checker' | 'interactor' | 'generator' | 'bruteForce';
+export interface ChooseSrcFileMsg extends ProblemBaseMsg {
+  type: 'chooseSrcFile';
+  fileType: WebviewSrcFileTypes;
+}
+export interface OpenSettingsMsg extends BaseMsg {
+  type: 'openSettings';
+}
+export interface RemoveSrcFileMsg extends ProblemBaseMsg {
+  type: 'removeSrcFile';
+  fileType: WebviewSrcFileTypes;
+}
+export interface StartStressTestMsg extends ProblemBaseMsg {
+  type: 'startStressTest';
+  forceCompile: boolean | null;
+}
+export interface StopStressTestMsg extends ProblemBaseMsg {
+  type: 'stopStressTest';
+}
+export interface SubmitMsg extends ProblemBaseMsg {
+  type: 'submit';
+}
+export interface DragDropMsg extends BaseMsg {
+  type: 'dragDrop';
+  items: string[];
+}
+
+export type ProblemMsg =
+  | EditProblemDetailsMsg
+  | DeleteProblemMsg
+  | RunAllTestcasesMsg
+  | StopTestcasesMsg
+  | AddTestcaseMsg
+  | LoadTestcasesMsg
+  | RunSingleTestcaseMsg
+  | ClearTestcaseStatusMsg
+  | ChooseTestcaseFileMsg
+  | SetTestcaseStringMsg
+  | UpdateTestcaseMsg
+  | CompareTestcaseMsg
+  | ToggleTestcaseFileMsg
+  | DeleteTestcaseMsg
+  | ReorderTestcaseMsg
+  | ChooseSrcFileMsg
+  | RemoveSrcFileMsg
+  | StartStressTestMsg
+  | StopStressTestMsg
+  | SubmitMsg
+  | DragDropMsg;
+
+export type WebviewMsg =
+  | ProblemMsg
+  | CreateProblemMsg
+  | ImportProblemMsg
+  | InitMsg
+  | OpenFileMsg
+  | OpenTestlibMsg
+  | OpenSettingsMsg;

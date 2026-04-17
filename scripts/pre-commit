@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+pnpm check-translations || exit 1
+pnpm lint || exit 1
+pnpm typecheck || exit 1

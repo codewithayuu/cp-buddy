@@ -1,0 +1,117 @@
+import EventEmitter from 'node:events';
+import { VerdictName } from '@cpbuddy/core';
+import type TypedEventEmitter from 'typed-emitter';
+import { TestcaseIo } from '@/domain/entities/testcaseIo';
+
+export interface TestcaseResult {
+  verdict: VerdictName;
+  timeMs: number | null;
+  memoryMb: number | null;
+  stdout: TestcaseIo | null;
+  stderr: TestcaseIo | null;
+  msg: string | null;
+}
+
+type TestcaseEvents = {
+  patchTestcase: (payload: Partial<Testcase>) => void;
+  patchTestcaseResult: (payload: Partial<TestcaseResult>) => void;
+};
+
+const pick = <T>(next: T | null | undefined, fallback: T | null): T | null =>
+  next === undefined ? fallback : next;
+
+export class Testcase {
+  public readonly signals = new EventEmitter() as TypedEventEmitter<TestcaseEvents>;
+
+  public constructor(
+    private _stdin: TestcaseIo = new TestcaseIo({ data: '' }),
+    private _answer: TestcaseIo = new TestcaseIo({ data: '' }),
+    private _isExpand: boolean = false,
+    private _isDisabled: boolean = false,
+    private _result: TestcaseResult | null = null,
+  ) {}
+
+  public get stdin(): TestcaseIo {
+    return this._stdin;
+  }
+  public set stdin(value: Readonly<TestcaseIo>) {
+    this._stdin = value;
+    this.signals.emit('patchTestcase', { stdin: value });
+  }
+  public get answer(): TestcaseIo {
+    return this._answer;
+  }
+  public set answer(value: Readonly<TestcaseIo>) {
+    this._answer = value;
+    this.signals.emit('patchTestcase', { answer: value });
+  }
+  public get isExpand(): boolean {
+    return this._isExpand;
+  }
+  public set isExpand(value: boolean) {
+    this._isExpand = value;
+    this.signals.emit('patchTestcase', { isExpand: this._isExpand });
+  }
+  public get isDisabled(): boolean {
+    return this._isDisabled;
+  }
+  public set isDisabled(value: boolean) {
+    this._isDisabled = value;
+    this.signals.emit('patchTestcase', { isDisabled: this._isDisabled });
+  }
+  public get result(): Readonly<TestcaseResult> | null {
+    return this._result;
+  }
+
+  public clearResult(): string[] {
+    const disposables: string[] = [
+      ...(this._result?.stdout?.getDisposables() ?? []),
+      ...(this._result?.stderr?.getDisposables() ?? []),
+    ];
+    this._result = null;
+    this.signals.emit('patchTestcase', { result: null });
+    return disposables;
+  }
+  public updateResult(updated: Readonly<Partial<TestcaseResult>>): void {
+    const base: TestcaseResult = this._result ?? {
+      verdict: VerdictName.unknownError,
+      timeMs: null,
+      memoryMb: null,
+      stdout: null,
+      stderr: null,
+      msg: null,
+    };
+    this._result = {
+      verdict: updated.verdict ?? base.verdict,
+      timeMs: pick(updated.timeMs, base.timeMs),
+      memoryMb: pick(updated.memoryMb, base.memoryMb),
+      stdout: pick(updated.stdout, base.stdout),
+      stderr: pick(updated.stderr, base.stderr),
+      msg: this.formatMessage(base.msg, updated.msg),
+    };
+    this.signals.emit('patchTestcaseResult', updated);
+  }
+  public getDisposables(): string[] {
+    return [
+      ...this.stdin.getDisposables(),
+      ...this.answer.getDisposables(),
+      ...(this._result?.stdout?.getDisposables() ?? []),
+      ...(this._result?.stderr?.getDisposables() ?? []),
+    ];
+  }
+  public isRelated(path: string): boolean {
+    const paths = [
+      this.stdin.path,
+      this.answer.path,
+      this._result?.stdout?.path,
+      this._result?.stderr?.path,
+    ];
+    return paths.includes(path);
+  }
+  private formatMessage(oldMsg: string | null, newMsg?: string | null): string | null {
+    if (!newMsg) return oldMsg;
+    const trimmed = newMsg.trim();
+    if (!oldMsg) return `${trimmed}\n`;
+    return `${oldMsg}\n${trimmed}\n`;
+  }
+}
