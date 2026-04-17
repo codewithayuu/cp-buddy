@@ -95,8 +95,11 @@ jobs:
           echo "Version changed: $VERSION_CHANGED"
           echo "::endgroup::"
 
-      - name: Build all packages
+      - name: Clean and build all packages
         run: |
+          echo "::group::Cleaning previous builds"
+          pnpm -C packages/browser-ext clean || true
+          echo "::endgroup::"
           echo "::group::Building packages"
           pnpm package
           echo "::endgroup::"
