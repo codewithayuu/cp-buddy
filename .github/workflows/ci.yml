@@ -258,7 +258,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ needs.build.outputs.version }}
-          name: v${{ needs.build.outputs.version }}
+          name: CPBuddy v${{ needs.build.outputs.version }}
           files: ./dist/*
           prerelease: ${{ needs.build.outputs.pre_release }}
           generate_release_notes: true
