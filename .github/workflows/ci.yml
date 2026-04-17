@@ -267,6 +267,6 @@ jobs:
 
       - name: Move cards in project
         env:
-          GITHUB_TOKEN: ${{ secrets.PROJECTS_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PROJECTS_GITHUB_TOKEN }}
           PRE_RELEASE: ${{ needs.build.outputs.pre_release }}
         run: bash scripts/move-cards.sh
