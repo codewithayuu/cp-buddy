@@ -413,6 +413,11 @@
         "order": 5,
         "title": "%config.problem%",
         "properties": {
+          "cpbuddy.problem.autoCategorize": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "%config.problem.autoCategorize%"
+          },
           "cpbuddy.problem.defaultTimeLimit": {
             "type": "number",
             "default": 1000,

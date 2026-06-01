@@ -49,7 +49,10 @@ export interface IWebviewOverrides {
 
 export interface IWebviewProblem {
   name: string;
+  group: string;
   url: string | null;
+  rating?: number;
+  difficulty?: string;
   revision: number;
   testcases: Record<TestcaseId, IWebviewTestcase>;
   testcaseOrder: TestcaseId[];

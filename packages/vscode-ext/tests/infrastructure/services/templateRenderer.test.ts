@@ -48,56 +48,54 @@ describe('TemplateRenderer', () => {
     return p;
   };
 
-  it('should return empty string when no template file configured', async () => {
+  it('should return header string when no template file configured', async () => {
     settingsMock.problem.templateFile = '';
     const result = await renderer.render(makeProblem());
-    expect(result).toBe('');
+    expect(result).toEqual({ header: '// Problem Name: A + B\n// Problem URL: https://codeforces.com/contest/1/problem/A\n//\n', template: '' });
   });
 
-  it('should return empty string when path resolution fails', async () => {
-    settingsMock.problem.templateFile = '/template.cpp';
-    // biome-ignore lint/suspicious/noExplicitAny: testing invalid return type
-    pathResolverMock.renderPathWithFile.mockReturnValue(null as any);
+  it('should return header string when path resolution fails', async () => {
+    settingsMock.problem.templateFile = '/home/user/template.cpp';
+    pathResolverMock.renderPathWithFile.mockReturnValue(null);
 
     const result = await renderer.render(makeProblem());
-    expect(result).toBe('');
+    expect(result).toEqual({ header: '// Problem Name: A + B\n// Problem URL: https://codeforces.com/contest/1/problem/A\n//\n', template: '' });
   });
 
-  it('should render template with variable substitution', async () => {
-    settingsMock.problem.templateFile = '/template.cpp';
-    pathResolverMock.renderPathWithFile.mockReturnValue('/resolved/template.cpp');
+  it('should render template with variable substitution and header', async () => {
+    settingsMock.problem.templateFile = '/home/user/template.cpp';
+    pathResolverMock.renderPathWithFile.mockReturnValue('/home/user/template.cpp');
     fsMock.readFile.mockResolvedValue(
-      // biome-ignore lint/suspicious/noTemplateCurlyInString: template content
       '// Title: ${title}\n// Time: ${timeLimit}ms\n// Memory: ${memoryLimit}MB\n// URL: ${url}\n',
     );
 
     const result = await renderer.render(makeProblem());
 
-    expect(result).toBe(
-      '// Title: A + B\n// Time: 2000ms\n// Memory: 256MB\n// URL: https://codeforces.com/contest/1/problem/A\n',
-    );
+    expect(result).toEqual({
+      header: '// Problem Name: A + B\n// Problem URL: https://codeforces.com/contest/1/problem/A\n//\n',
+      template: '// Title: A + B\n// Time: 2000ms\n// Memory: 256MB\n// URL: https://codeforces.com/contest/1/problem/A\n'
+    });
   });
 
-  it('should use defaults when overrides are not set', async () => {
-    settingsMock.problem.templateFile = '/template.cpp';
-    pathResolverMock.renderPathWithFile.mockReturnValue('/resolved/template.cpp');
-    // biome-ignore lint/suspicious/noTemplateCurlyInString: template content
+  it('should use defaults when overrides are not set and include header', async () => {
+    const p = new Problem('test', '/tmp/test.cpp');
+    settingsMock.problem.templateFile = '/home/user/template.cpp';
+    pathResolverMock.renderPathWithFile.mockReturnValue('/home/user/template.cpp');
     fsMock.readFile.mockResolvedValue('${timeLimit} ${memoryLimit}');
 
-    const p = new Problem('test', '/src/main.cpp');
     const result = await renderer.render(p);
 
-    expect(result).toBe('0 0');
+    expect(result).toEqual({ header: '// Problem Name: test\n// Problem URL: \n//\n', template: '0 0' });
   });
 
-  it('should return empty string and show alert when reading template fails', async () => {
-    settingsMock.problem.templateFile = '/template.cpp';
-    pathResolverMock.renderPathWithFile.mockReturnValue('/resolved/template.cpp');
+  it('should return header string and show alert when reading template fails', async () => {
+    settingsMock.problem.templateFile = '/home/user/template.cpp';
+    pathResolverMock.renderPathWithFile.mockReturnValue('/home/user/template.cpp');
     fsMock.readFile.mockRejectedValue(new Error('ENOENT'));
 
     const result = await renderer.render(makeProblem());
 
-    expect(result).toBe('');
+    expect(result).toEqual({ header: '// Problem Name: A + B\n// Problem URL: https://codeforces.com/contest/1/problem/A\n//\n', template: '' });
     expect(uiMock.alert).toHaveBeenCalledWith('warn', expect.stringContaining('ENOENT'));
   });
 });

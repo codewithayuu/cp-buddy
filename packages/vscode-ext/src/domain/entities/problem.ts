@@ -24,6 +24,9 @@ type ProblemEvents = {
 export class Problem {
   public readonly src: IFileWithHash;
   public url: string | null = null;
+  public group: string = '';
+  public rating?: number;
+  public difficulty?: string;
   private _revision: number = 0;
   private _testcases: Map<TestcaseId, Testcase> = new Map();
   private _testcaseOrder: TestcaseId[] = [];

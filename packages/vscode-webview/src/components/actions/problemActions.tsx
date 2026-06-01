@@ -1,17 +1,16 @@
 import type { IWebviewBackgroundProblem, IWebviewStressTest, ProblemId } from '@cpbuddy/core';
 import BackupIcon from '@mui/icons-material/Backup';
+import BoltIcon from '@mui/icons-material/Bolt';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
-import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove';
 import SettingsIcon from '@mui/icons-material/Settings';
+import Box from '@mui/material/Box';
 import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BackgroundProblemView } from '@/components/actions/backgroundProblemView';
 import { DeleteProblemDialog } from '@/components/actions/deleteProblemDialog';
 import { StressTestDialog } from '@/components/actions/stressTestDialog';
 import { SubmitDialog } from '@/components/actions/submitDialog';
-import { HelpButton } from '@/components/actions/support';
 import { CPBuddyButton } from '@/components/base/cpbuddyButton';
 import { CPBuddyFlex } from '@/components/base/cpbuddyFlex';
 import { RunButtonGroup } from '@/components/runButtonGroup';
@@ -49,44 +48,52 @@ export const ProblemActions = memo(
     }, [clickTime]);
     return (
       <>
-        <CPBuddyFlex
-          smallGap
-          sx={{ justifyContent: 'center' }}
-          onClick={() => setClickTime((times) => [...times, Date.now()].slice(-10))}
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            position: 'sticky',
+            bottom: 24,
+            zIndex: 100,
+            pointerEvents: 'none', // Allow clicking through the empty space around the dock
+            width: '100%',
+          }}
         >
-          <HelpButton />
-          <CPBuddyButton
-            icon={SettingsIcon}
-            name={t('problemActions.settings', 'Settings')}
-            onClick={() => vscode.postMessage({ type: 'openSettings' })}
-            larger
-            sx={{ display: { xs: 'none', md: 'block' } }}
-          />
-          <CPBuddyFlex smallGap sx={{ flexWrap: 'wrap', justifyContent: 'center', flex: 1 }}>
-            {hasRunning ? (
-              <CPBuddyButton
-                larger
-                name={t('problemActions.stopTestcases')}
-                icon={PlaylistRemoveIcon}
-                color='warning'
-                onClick={() =>
-                  dispatch({
-                    type: 'stopTestcases',
-                    problemId,
-                  })
-                }
-              />
-            ) : (
-              <RunButtonGroup
-                larger
-                icon={PlaylistPlayIcon}
-                name={t('problemActions.runAllTestcases')}
-                color='success'
-                onRun={(forceCompile) =>
-                  dispatch({ type: 'runAllTestcases', problemId, forceCompile })
-                }
-              />
-            )}
+          <CPBuddyFlex
+            sx={{
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: 2.5,
+              backgroundColor: 'rgba(25, 27, 33, 0.75)',
+              backdropFilter: 'blur(16px)',
+              padding: '12px 28px',
+              borderRadius: '32px',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.05)',
+              pointerEvents: 'auto', // Re-enable pointer events for the dock itself
+              transition: 'transform 0.2s',
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: '0 12px 40px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1)',
+              }
+            }}
+            onClick={() => setClickTime((times) => [...times, Date.now()].slice(-10))}
+          >
+            <CPBuddyButton
+              icon={SettingsIcon}
+              name={t('problemActions.settings', 'Settings')}
+              onClick={() => vscode.postMessage({ type: 'openSettings' })}
+              larger
+              sx={{ display: { xs: 'none', md: 'block' } }}
+            />
+            
+            <CPBuddyButton
+              larger
+              icon={BoltIcon}
+              name={t('runButtonGroup.forceCompile')}
+              color='warning'
+              onClick={() => dispatch({ type: 'runAllTestcases', problemId, forceCompile: true })}
+            />
             <CPBuddyButton
               larger
               name={t('problemActions.stressTest')}
@@ -97,18 +104,6 @@ export const ProblemActions = memo(
                 animation: stressTest.isRunning ? 'pulse 1s infinite' : undefined,
               }}
             />
-            {!!url && (
-              <CPBuddyButton
-                larger
-                name={t('problemActions.submit')}
-                icon={BackupIcon}
-                color='secondary'
-                onClick={() => {
-                  if (config.confirmSubmit) uiDispatch({ type: 'openSubmitDialog', problemId });
-                  else dispatch({ type: 'submit', problemId });
-                }}
-              />
-            )}
             <CPBuddyButton
               sx={{ display: { xs: 'none', sm: 'block' } }}
               larger
@@ -118,9 +113,10 @@ export const ProblemActions = memo(
               onClick={() => setDeleteDialogOpen(true)}
             />
             {!!window.easterEgg && <div title={t('problemActions.easterEgg')}>🐰</div>}
+            
+            <BackgroundProblemView backgroundProblems={backgroundProblems} />
           </CPBuddyFlex>
-          <BackgroundProblemView backgroundProblems={backgroundProblems} />
-        </CPBuddyFlex>
+        </Box>
 
         <DeleteProblemDialog
           open={isDeleteDialogOpen}

@@ -68,7 +68,54 @@ const App = () => {
   }, []);
 
   const theme = createTheme({
-    palette: { mode: isDark ? 'dark' : 'light' },
+    palette: { 
+      mode: isDark ? 'dark' : 'light',
+      background: {
+        default: isDark ? '#0F1115' : '#ffffff',
+        paper: isDark ? '#191B21' : '#f8f9fa',
+      },
+      primary: {
+        main: isDark ? '#E2E8F0' : '#1e293b',
+      },
+      secondary: {
+        main: '#94a3b8',
+      },
+      divider: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
+    },
+    typography: {
+      fontFamily: '"Inter", "Outfit", "Roboto", "Helvetica", "Arial", sans-serif',
+    },
+    shape: {
+      borderRadius: 8,
+    },
+    components: {
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            textTransform: 'none',
+            fontWeight: 500,
+            borderRadius: 6,
+          },
+        },
+      },
+      MuiPaper: {
+        styleOverrides: {
+          root: {
+            backgroundImage: 'none', // Removes default MUI gradient on dark mode
+            boxShadow: 'none',
+          },
+        },
+      },
+      MuiAccordion: {
+        styleOverrides: {
+          root: {
+            '&:before': {
+              display: 'none', // Removes the default border line above MUI accordions
+            },
+          },
+        },
+      },
+    },
     breakpoints: { values: { xs: 170, sm: 220, md: 270, lg: 320, xl: 370 } },
   });
   return (

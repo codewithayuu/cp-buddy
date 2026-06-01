@@ -11,7 +11,11 @@ import { ErrorBoundary } from '@/components/base/errorBoundary';
 import { NoTestcases } from '@/components/noTestcases';
 import { TestcaseView } from '@/components/testcaseView';
 import { useConfigState } from '@/context/ConfigContext';
-import { useProblemDispatch } from '@/context/ProblemContext';
+import { useProblemDispatch, useProblemUiDispatch } from '@/context/ProblemContext';
+import BackupIcon from '@mui/icons-material/Backup';
+import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
+import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove';
+import { CPBuddyButton } from '@/components/base/cpbuddyButton';
 
 interface InfoButtonProps {
   sx?: SxProps<Theme>;
@@ -45,12 +49,15 @@ interface TestcasesViewProps {
   problemId: ProblemId;
   testcaseOrder: TestcaseId[];
   testcases: Record<TestcaseId, IWebviewTestcase>;
+  hasRunning: boolean;
+  url: string | null;
 }
 
-export const TestcasesView = memo(({ problemId, testcaseOrder, testcases }: TestcasesViewProps) => {
+export const TestcasesView = memo(({ problemId, testcaseOrder, testcases, hasRunning, url }: TestcasesViewProps) => {
   const { t } = useTranslation();
   const { config } = useConfigState();
   const dispatch = useProblemDispatch();
+  const uiDispatch = useProblemUiDispatch();
   const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
   const draggedIdxRef = useRef<number | null>(null);
@@ -109,6 +116,42 @@ export const TestcasesView = memo(({ problemId, testcaseOrder, testcases }: Test
 
   return (
     <CPBuddyFlex column>
+      <CPBuddyFlex sx={{ justifyContent: 'flex-end', width: '100%', mb: 1, gap: 2 }}>
+        {hasRunning ? (
+          <CPBuddyButton
+            larger
+            name={t('problemActions.stopTestcases')}
+            icon={PlaylistRemoveIcon}
+            color='warning'
+            onClick={() =>
+              dispatch({
+                type: 'stopTestcases',
+                problemId,
+              })
+            }
+          />
+        ) : (
+          <CPBuddyButton
+            larger
+            icon={PlaylistPlayIcon}
+            name={t('problemActions.runAllTestcases')}
+            color='success'
+            onClick={() => dispatch({ type: 'runAllTestcases', problemId, forceCompile: null })}
+          />
+        )}
+        {!!url && (
+          <CPBuddyButton
+            larger
+            name={t('problemActions.submit')}
+            icon={BackupIcon}
+            color='secondary'
+            onClick={() => {
+              if (config.confirmSubmit) uiDispatch({ type: 'openSubmitDialog', problemId });
+              else dispatch({ type: 'submit', problemId });
+            }}
+          />
+        )}
+      </CPBuddyFlex>
       {testcaseOrder.length ? (
         <>
           {config.showAcGif && isAllAccepted ? <AcCongrats /> : null}

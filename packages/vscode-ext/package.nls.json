@@ -54,6 +54,7 @@
   "config.languages.rustCompiler": "Specify the **Rust compiler** to use for compilation (e.g., `rustc`). This setting determines the executable used to compile your Rust source code.",
   "config.languages.rustCompilerArgs": "Define the **command-line arguments** passed to the Rust compiler. These typically include optimization flags (e.g., `-C opt-level=2`). For more on compiler arguments, consult the rustc documentation.",
   "config.problem": "Problem",
+  "config.problem.autoCategorize": "Automatically categorize problems based on their source URL.",
   "config.problem.clearBeforeLoad": "Specify whether to clear the current test cases before loading new ones from a zip file or folder.",
   "config.problem.defaultMemoryLimit": "Set the **default memory limit** (in **MB**) that will be applied to newly created problems within the extension. This value is used if no specific memory limit is provided for a problem, ensuring a baseline for memory usage during execution.",
   "config.problem.defaultTimeLimit": "Set the **default time limit** (in **milliseconds**) that will be applied to newly created problems within the extension. This value is used if no specific time limit is provided for a problem, ensuring a baseline for execution.",

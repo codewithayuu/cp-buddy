@@ -109,6 +109,10 @@ export class ErrorBoundary extends Component<Props, State> {
     this.state = { hasError: false, error: null };
   }
 
+  public static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
+  }
+
   public resetBoundary = () => {
     this.setState({ hasError: false, error: null }, () => {
       this.forceUpdate();

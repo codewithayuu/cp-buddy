@@ -33,6 +33,7 @@ interface ProblemTitleProps {
   timeElapsedMs: number;
   overrides: IWebviewOverrides;
   startTime: number;
+  group?: string;
 }
 
 const formatDuration = (ms: number) => {
@@ -49,7 +50,7 @@ const formatDuration = (ms: number) => {
 
 const Subtitle = memo<TypographyProps>((props) => {
   return (
-    <CPBuddyText sx={{ fontSize: '0.8rem', paddingRight: '4px', whiteSpace: 'normal' }} {...props}>
+    <CPBuddyText sx={{ fontSize: '0.8rem', whiteSpace: 'normal', opacity: 0.7 }} {...props}>
       {props.children}
     </CPBuddyText>
   );
@@ -65,6 +66,7 @@ export const ProblemTitle = memo(
     timeElapsedMs,
     overrides,
     startTime,
+    group,
   }: ProblemTitleProps) => {
     const { t } = useTranslation();
     const dispatch = useProblemDispatch();
@@ -122,18 +124,42 @@ export const ProblemTitle = memo(
 
     return (
       <>
-        <CPBuddyFlex>
-          <CPBuddyFlex column alignStart sx={{ flexShrink: 1, width: 'unset' }}>
-            <CPBuddyText sx={{ cursor: url ? 'pointer' : 'default', width: '100%', title: name }}>
+        <CPBuddyFlex sx={{ position: 'relative', width: '100%', py: 2 }}>
+          <CPBuddyFlex column alignCenter justifyCenter sx={{ flex: 1, width: '100%', gap: 1 }}>
+            {!!group && (
+              <Chip
+                label={group}
+                size="small"
+                sx={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  color: 'primary.main',
+                  fontWeight: 600,
+                  fontSize: '0.7rem',
+                  letterSpacing: '0.05em',
+                  textTransform: 'uppercase',
+                }}
+              />
+            )}
+            
+            <CPBuddyText sx={{ cursor: url ? 'pointer' : 'default', textAlign: 'center', fontSize: '1.5rem', fontWeight: 700, title: name }}>
               {url ? (
-                <CPBuddyLink sx={{ href: url }} name={url}>
+                <CPBuddyLink sx={{ href: url, color: 'inherit', textDecoration: 'none', '&:hover': { opacity: 0.8 } }} name={url}>
                   {name}
                 </CPBuddyLink>
               ) : (
                 name
               )}
             </CPBuddyText>
-            <CPBuddyFlex>
+            
+            <CPBuddyFlex alignCenter justifyCenter sx={{ gap: 2, flexWrap: 'wrap' }}>
+              <CPBuddyTooltip title={t('problemTitle.timeElapsed')}>
+                <CPBuddyText sx={{ fontWeight: 600, fontSize: '1.2rem', fontFamily: 'monospace' }}>
+                  {formatDuration(timeElapsedMs + timeElapsed)}
+                </CPBuddyText>
+              </CPBuddyTooltip>
+            </CPBuddyFlex>
+
+            <CPBuddyFlex alignCenter justifyCenter sx={{ gap: 2, flexWrap: 'wrap', mt: 1 }}>
               <Subtitle>
                 {t('problemTitle.timeLimit', {
                   time: overrides.timeLimitMs.override ?? overrides.timeLimitMs.defaultValue,
@@ -176,32 +202,30 @@ export const ProblemTitle = memo(
                   </CPBuddyLink>
                 </Subtitle>
               )}
-              <CPBuddyTooltip title={t('problemTitle.timeElapsed')}>
-                <Subtitle className='defaultBlur' sx={{ display: { xs: 'none', md: 'inline' } }}>
-                  {formatDuration(timeElapsedMs + timeElapsed)}
-                </Subtitle>
-              </CPBuddyTooltip>
             </CPBuddyFlex>
           </CPBuddyFlex>
-          <CPBuddyMenu
-            menu={{
-              [t('problemTitle.menu.editRaw')]: () => {
-                dispatch({
-                  type: 'openFile',
-                  problemId,
-                  path: '/problem.cpbuddy.json',
-                });
-              },
-            }}
-          >
-            <CPBuddyButton
-              sx={{ display: { xs: 'none', sm: 'inline' } }}
-              name={t('problemTitle.editTitle')}
-              icon={EditIcon}
-              color='secondary'
-              onClick={handleEditTitle}
-            />
-          </CPBuddyMenu>
+          
+          <Box sx={{ position: 'absolute', top: 16, right: 0 }}>
+            <CPBuddyMenu
+              menu={{
+                [t('problemTitle.menu.editRaw')]: () => {
+                  dispatch({
+                    type: 'openFile',
+                    problemId,
+                    path: '/problem.cpbuddy.json',
+                  });
+                },
+              }}
+            >
+              <CPBuddyButton
+                sx={{ display: { xs: 'none', sm: 'inline' } }}
+                name={t('problemTitle.editTitle')}
+                icon={EditIcon}
+                color='secondary'
+                onClick={handleEditTitle}
+              />
+            </CPBuddyMenu>
+          </Box>
         </CPBuddyFlex>
         <Dialog fullScreen open={isEditDialogOpen} onClose={handleEditDialogClose}>
           <DialogTitle>{t('problemTitle.dialog.title')}</DialogTitle>
