@@ -56,8 +56,33 @@ const process = async () => {
         });
       }
 
-      logger.debug('Generated filename', { filename });
-      results.push(path.join(folder, filename));
+      let folderPath = folder;
+      if (settings.problem.autoCategorize && url) {
+        if (url.includes('codeforces.com/')) {
+          folderPath = path.join(folderPath, 'Codeforces');
+          if (problem.rating) {
+            folderPath = path.join(folderPath, problem.rating.toString());
+          }
+        } else if (url.includes('leetcode.com/')) {
+          folderPath = path.join(folderPath, 'LeetCode');
+          if (problem.difficulty) {
+            folderPath = path.join(folderPath, problem.difficulty);
+          }
+        } else if (url.includes('atcoder.jp/')) {
+          folderPath = path.join(folderPath, 'AtCoder');
+          const contestMatch = url.match(/contests\/([^\/]+)/);
+          if (contestMatch) {
+            folderPath = path.join(folderPath, contestMatch[1]);
+          }
+        } else if (url.includes('cses.fi/')) {
+          folderPath = path.join(folderPath, 'CSES');
+        } else if (url.includes('hackerrank.com/')) {
+          folderPath = path.join(folderPath, 'HackerRank');
+        }
+      }
+
+      logger.debug('Generated filename and path', { filename, folderPath });
+      results.push(path.join(folderPath, filename));
     } catch (e) {
       logger.error(
         'Error generating filename for problem',

@@ -91,49 +91,134 @@ const PopupInner = () => {
       await browser.scripting.executeScript({
         target: { tabId: tab.id },
         args: [status.port],
-        func: (port) => {
+        func: async (port) => {
           try {
-            const isCF = window.location.hostname.includes('codeforces.com');
-            if (!isCF) {
-              alert('Currently only Codeforces is supported for this feature.');
+            const hostname = window.location.hostname;
+            const url = window.location.href;
+            let payload: any = null;
+
+            if (hostname.includes('codeforces.com')) {
+              const name = document.querySelector('.problem-statement .header .title')?.textContent || 'Codeforces Problem';
+              const timeLimitStr = document.querySelector('.time-limit')?.childNodes[1]?.textContent || '1000';
+              const memoryLimitStr = document.querySelector('.memory-limit')?.childNodes[1]?.textContent || '256';
+              const timeLimit = parseInt(timeLimitStr.replace(/[^0-9]/g, ''), 10) * 1000 || 1000;
+              const memoryLimit = parseInt(memoryLimitStr.replace(/[^0-9]/g, ''), 10) || 256;
+
+              const inputs = document.querySelectorAll('.input pre');
+              const outputs = document.querySelectorAll('.output pre');
+
+              const tests = [];
+              for (let i = 0; i < inputs.length; i++) {
+                tests.push({
+                  input: (inputs[i] as HTMLElement).innerText,
+                  output: (outputs[i] as HTMLElement).innerText,
+                });
+              }
+
+              payload = { name, group: 'Codeforces', url, memoryLimit, timeLimit, tests, testType: 'single', input: { type: 'stdin' }, output: { type: 'stdout' }, languages: { java: { taskClass: 'Task' } }, batch: { id: crypto.randomUUID(), size: 1 } };
+            } else if (hostname.includes('atcoder.jp')) {
+              const name = document.querySelector('h2, .h2')?.textContent?.trim() || 'AtCoder Problem';
+              // Time Limit is usually in the first p tag inside #task-statement, or in span
+              const timeLimitStr = document.body.textContent?.match(/Time Limit: (\d+) sec/)?.[1] || '2';
+              const memoryLimitStr = document.body.textContent?.match(/Memory Limit: (\d+) MB/)?.[1] || '1024';
+              const timeLimit = parseInt(timeLimitStr, 10) * 1000 || 2000;
+              const memoryLimit = parseInt(memoryLimitStr, 10) || 1024;
+
+              const parts = document.querySelectorAll('.part h3');
+              const inputs: string[] = [];
+              const outputs: string[] = [];
+              parts.forEach(part => {
+                if (part.textContent?.includes('Input')) {
+                  inputs.push(part.nextElementSibling?.textContent?.trim() || '');
+                } else if (part.textContent?.includes('Output')) {
+                  outputs.push(part.nextElementSibling?.textContent?.trim() || '');
+                }
+              });
+              
+              const tests = [];
+              for (let i = 0; i < inputs.length; i++) {
+                tests.push({ input: inputs[i] + '\n', output: outputs[i] + '\n' });
+              }
+
+              payload = { name, group: 'AtCoder', url, memoryLimit, timeLimit, tests, testType: 'single', input: { type: 'stdin' }, output: { type: 'stdout' }, languages: { java: { taskClass: 'Task' } }, batch: { id: crypto.randomUUID(), size: 1 } };
+            } else if (hostname.includes('cses.fi')) {
+              const name = document.querySelector('title')?.textContent?.replace('CSES - ', '') || 'CSES Problem';
+              const timeLimitStr = document.querySelector('.title-block')?.textContent?.match(/Time limit:\s*([\d.]+) s/)?.[1] || '1';
+              const memoryLimitStr = document.querySelector('.title-block')?.textContent?.match(/Memory limit:\s*(\d+) MB/)?.[1] || '512';
+              const timeLimit = parseFloat(timeLimitStr) * 1000 || 1000;
+              const memoryLimit = parseInt(memoryLimitStr, 10) || 512;
+
+              const codeBlocks = document.querySelectorAll('.md pre, pre');
+              const tests = [];
+              for (let i = 0; i < codeBlocks.length; i += 2) {
+                if (codeBlocks[i+1]) {
+                  tests.push({ input: (codeBlocks[i] as HTMLElement).innerText, output: (codeBlocks[i+1] as HTMLElement).innerText });
+                }
+              }
+
+              payload = { name, group: 'CSES', url, memoryLimit, timeLimit, tests, testType: 'single', input: { type: 'stdin' }, output: { type: 'stdout' }, languages: { java: { taskClass: 'Task' } }, batch: { id: crypto.randomUUID(), size: 1 } };
+            } else if (hostname.includes('leetcode.com')) {
+              const match = window.location.pathname.match(/\/problems\/([^/?#]+)/);
+              if (!match) {
+                alert('Please navigate to a specific LeetCode problem page.');
+                return;
+              }
+              const slug = match[1];
+
+              const query = `
+                query selectProblem($titleSlug: String!) {
+                  question(titleSlug: $titleSlug) {
+                    questionId
+                    title
+                    content
+                  }
+                }
+              `;
+              const res = await fetch('https://leetcode.com/graphql', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query, variables: { titleSlug: slug } }),
+              });
+              const data = await res.json();
+              const question = data?.data?.question;
+              if (!question) {
+                alert('Failed to fetch LeetCode problem data via GraphQL.');
+                return;
+              }
+              const name = question.title || 'LeetCode Problem';
+              
+              const outputs: string[] = [];
+              const regex = /<strong>Output:?\s*<\/strong>\s*([^<\n]+)/gi;
+              let m;
+              while ((m = regex.exec(question.content)) !== null) {
+                outputs.push(m[1].trim().replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#39;/g, "'"));
+              }
+              
+              const inputsMatch = question.content.match(/<strong>Input:?\s*<\/strong>\s*([^<\n]+)/gi) || [];
+              const inputs = inputsMatch.map((str: string) => {
+                const inner = str.replace(/<strong>Input:?\s*<\/strong>\s*/i, '');
+                return inner.trim().replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#39;/g, "'");
+              });
+
+              const tests = [];
+              for (let i = 0; i < inputs.length; i++) {
+                tests.push({ input: inputs[i], output: outputs[i] || '' });
+              }
+              payload = { name, group: 'LeetCode', url, memoryLimit: 256, timeLimit: 2000, tests, testType: 'single', input: { type: 'stdin' }, output: { type: 'stdout' }, languages: { java: { taskClass: 'Task' } }, batch: { id: crypto.randomUUID(), size: 1 } };
+            } else if (hostname.includes('hackerrank.com')) {
+              const name = document.querySelector('h1.page-label')?.textContent?.trim() || document.querySelector('h1')?.textContent?.trim() || document.title.split('|')[0].trim() || 'HackerRank Problem';
+              const preBlocks = document.querySelectorAll('.challenge-body-html pre');
+              const tests = [];
+              for (let i = 0; i < preBlocks.length; i += 2) {
+                if (preBlocks[i+1]) {
+                  tests.push({ input: (preBlocks[i] as HTMLElement).innerText, output: (preBlocks[i+1] as HTMLElement).innerText });
+                }
+              }
+              payload = { name, group: 'HackerRank', url, memoryLimit: 512, timeLimit: 2000, tests, testType: 'single', input: { type: 'stdin' }, output: { type: 'stdout' }, languages: { java: { taskClass: 'Task' } }, batch: { id: crypto.randomUUID(), size: 1 } };
+            } else {
+              alert('Currently only Codeforces, AtCoder, CSES, LeetCode, and HackerRank are supported for this feature.');
               return;
             }
-
-            const name =
-              document.querySelector('.problem-statement .header .title')?.textContent ||
-              'Codeforces Problem';
-            const url = window.location.href;
-            const timeLimitStr =
-              document.querySelector('.time-limit')?.childNodes[1]?.textContent || '1000';
-            const memoryLimitStr =
-              document.querySelector('.memory-limit')?.childNodes[1]?.textContent || '256';
-            const timeLimit = parseInt(timeLimitStr.replace(/[^0-9]/g, ''), 10) * 1000 || 1000;
-            const memoryLimit = parseInt(memoryLimitStr.replace(/[^0-9]/g, ''), 10) || 256;
-
-            const inputs = document.querySelectorAll('.input pre');
-            const outputs = document.querySelectorAll('.output pre');
-
-            const tests = [];
-            for (let i = 0; i < inputs.length; i++) {
-              tests.push({
-                input: (inputs[i] as HTMLElement).innerText,
-                output: (outputs[i] as HTMLElement).innerText,
-              });
-            }
-
-            const payload = {
-              name,
-              group: 'Codeforces',
-              url,
-              memoryLimit,
-              timeLimit,
-              tests,
-              testType: 'single',
-              input: { type: 'stdin' },
-              output: { type: 'stdout' },
-              languages: { java: { taskClass: 'Task' } },
-              batch: { id: crypto.randomUUID(), size: 1 },
-            };
 
             fetch(`http://localhost:${port}/`, {
               method: 'POST',
@@ -141,32 +226,22 @@ const PopupInner = () => {
               body: JSON.stringify(payload),
             })
               .then(() => {
-                // Create a visual indicator on the page
                 const toast = document.createElement('div');
                 toast.textContent = 'Problem sent to VS Code!';
                 Object.assign(toast.style, {
-                  position: 'fixed',
-                  top: '20px',
-                  right: '20px',
-                  padding: '10px 20px',
-                  background: '#4CAF50',
-                  color: 'white',
-                  borderRadius: '4px',
-                  zIndex: '9999',
-                  fontFamily: 'sans-serif',
+                  position: 'fixed', top: '20px', right: '20px', padding: '10px 20px',
+                  background: '#4CAF50', color: 'white', borderRadius: '4px', zIndex: '9999', fontFamily: 'sans-serif',
                 });
                 document.body.appendChild(toast);
                 setTimeout(() => toast.remove(), 3000);
               })
               .catch((e) => {
                 console.error(e);
-                alert(
-                  `Failed to send to VS Code. Is the CPBuddy extension running on port ${port}?`,
-                );
+                alert(`Failed to send to VS Code. Is the CPBuddy extension running on port ${port}?`);
               });
           } catch (e) {
             console.error(e);
-            alert(`Failed to parse Codeforces problem: ${String(e)}`);
+            alert(`Failed to parse problem: ${String(e)}`);
           }
         },
       });

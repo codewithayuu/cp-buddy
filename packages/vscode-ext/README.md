@@ -35,7 +35,7 @@ This is the next generation of the
 
 [^1]: CPBuddy supports C/C++, Java, Python, JavaScript, Rust
 
-[^2]: CPBuddy Submit supports Codeforces, AtCoder, Luogu and Hydro. More platforms will be added in future updates.
+[^2]: CPBuddy Submit supports Codeforces, AtCoder, Luogu, Hydro, LeetCode, HackerRank, and CSES. More platforms will be added in future updates.
 
 [^3]: They are: AC PC PE WA TLE OLE RE CE SE SK RJ
 

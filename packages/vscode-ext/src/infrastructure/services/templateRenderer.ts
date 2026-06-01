@@ -22,27 +22,32 @@ export class TemplateRenderer implements ITemplateRenderer {
     this.logger = this.logger.withScope('templateRenderer');
   }
 
-  public async render(problem: Problem): Promise<string> {
+  public async render(problem: Problem): Promise<{ header: string; template: string }> {
+    const isPython = problem.src.path.endsWith('.py');
+    const commentPrefix = isPython ? '#' : '//';
+    const header = `${commentPrefix} Problem Name: ${problem.name}\n${commentPrefix} Problem URL: ${problem.url ?? ''}\n${commentPrefix}\n`;
+
     const templateFile = this.settings.problem.templateFile;
     if (!templateFile) {
       this.logger.debug('No template file configured');
-      return '';
+      return { header, template: '' };
     }
 
     const templatePath = this.pathResolver.renderPathWithFile(templateFile, problem.src.path, true);
     if (!templatePath) {
       this.logger.warn('Failed to resolve template path');
-      return '';
+      return { header, template: '' };
     }
 
     try {
-      const template = await this.fs.readFile(templatePath);
-      return this.renderString(template, [
+      const templateStr = await this.fs.readFile(templatePath);
+      const rendered = this.renderString(templateStr, [
         ['title', problem.name],
         ['timeLimit', problem.overrides?.timeLimitMs?.toString() ?? '0'],
         ['memoryLimit', problem.overrides?.memoryLimitMb?.toString() ?? '0'],
         ['url', problem.url ?? ''],
       ]);
+      return { header, template: rendered };
     } catch (e) {
       this.logger.warn('Failed to read or render template', e);
       this.ui.alert(
@@ -51,7 +56,7 @@ export class TemplateRenderer implements ITemplateRenderer {
           msg: (e as Error).message,
         }),
       );
-      return '';
+      return { header, template: '' };
     }
   }
 

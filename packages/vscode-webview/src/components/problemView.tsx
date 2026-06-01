@@ -40,6 +40,7 @@ export const ProblemView = memo(
             timeElapsedMs={problem.timeElapsedMs}
             overrides={problem.overrides}
             startTime={startTime}
+            group={problem.group}
           />
         </ErrorBoundary>
         <ErrorBoundary>
@@ -68,6 +69,8 @@ export const ProblemView = memo(
                 problemId={problemId}
                 testcaseOrder={problem.testcaseOrder}
                 testcases={problem.testcases}
+                hasRunning={hasRunning}
+                url={problem.url}
               />
             </CPBuddyMenu>
           </ErrorBoundary>

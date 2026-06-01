@@ -47,6 +47,37 @@ export class ImportCompanionProblems {
       return;
     }
 
+    // Fetch problem metadata (Rating, Difficulty)
+    for (const companionProblem of companionProblems) {
+      try {
+        if (companionProblem.url.includes('leetcode.com/problems/')) {
+          const titleSlug = companionProblem.url.match(/problems\/([^\/]+)/)?.[1];
+          if (titleSlug) {
+            const res = await fetch('https://leetcode.com/graphql', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                query: `query { question(titleSlug: "${titleSlug}") { difficulty } }`
+              })
+            });
+            const data: any = await res.json();
+            if (data?.data?.question?.difficulty) {
+              companionProblem.difficulty = data.data.question.difficulty;
+            }
+          }
+        } else if (companionProblem.url.includes('codeforces.com/')) {
+          const res = await fetch(companionProblem.url);
+          const text = await res.text();
+          const ratingMatch = text.match(/title="Difficulty".*?\*([0-9]+)/) || text.match(/\*([0-9]{3,4})/);
+          if (ratingMatch) {
+            companionProblem.rating = parseInt(ratingMatch[1], 10);
+          }
+        }
+      } catch (e) {
+        this.logger.warn(`Failed to fetch metadata for ${companionProblem.url}`, e);
+      }
+    }
+
     // Resolve paths using user script
     const workspaceFolders = this.workspace
       .getWorkspaceFolders()
@@ -78,6 +109,9 @@ export class ImportCompanionProblems {
         // Create the problem entity
         const problem = new Problem(companionProblem.name, srcPath);
         problem.url = companionProblem.url;
+        problem.group = companionProblem.group;
+        if (companionProblem.rating) problem.rating = companionProblem.rating;
+        if (companionProblem.difficulty) problem.difficulty = companionProblem.difficulty;
         problem.overrides = {
           timeLimitMs: companionProblem.timeLimit,
           memoryLimitMb: companionProblem.memoryLimit,
@@ -107,12 +141,15 @@ export class ImportCompanionProblems {
           this.logger.debug('Source file already exists', srcPath);
         } else {
           this.logger.debug('Creating new source file', srcPath);
-          const content = await this.templateRenderer.render(problem);
-          if (content.includes('$0') || content.includes('$1') || content.match(/\$\{\d+/)) {
-            await this.fs.safeWriteFile(srcPath, '');
-            snippetContent = content;
+          const { header, template } = await this.templateRenderer.render(problem);
+          await this.fs.safeWriteFile(srcPath, header);
+          
+          if (template.includes('$0') || template.includes('$1') || template.match(/\$\{\d+/)) {
+            snippetContent = template;
           } else {
-            await this.fs.safeWriteFile(srcPath, content);
+            // Append static template if it's not a snippet
+            const current = await this.fs.readFile(srcPath);
+            await this.fs.safeWriteFile(srcPath, current + template);
           }
         }
 

@@ -59,7 +59,10 @@ export interface IOverrides {
 export interface IProblem {
   version: string;
   name: string;
+  group: string;
   url: string | null;
+  rating?: number;
+  difficulty?: string;
   testcases: Record<TestcaseId, ITestcase>;
   testcaseOrder: TestcaseId[];
   src: IFileWithHash;

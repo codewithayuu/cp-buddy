@@ -4,6 +4,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
 import Accordion from '@mui/material/Accordion';
+import Box from '@mui/material/Box';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Chip from '@mui/material/Chip';
@@ -241,10 +242,18 @@ export const TestcaseView = memo(
         }}
         disabled={testcase.isDisabled}
         sx={{
-          borderLeft: `4px solid ${verdictColor || 'transparent'}`,
-          backgroundColor: verdictColor ? `${verdictColor}10` : undefined,
+          borderLeft: `4px solid ${verdictColor || 'rgba(255, 255, 255, 0.1)'}`,
+          backgroundColor: 'background.paper',
           transition: 'all 0.2s',
           filter: testcase.isDisabled ? 'grayscale(100%)' : 'none',
+          marginBottom: 1.5,
+          borderRadius: '8px !important',
+          overflow: 'hidden',
+          borderTop: '1px solid',
+          borderRight: '1px solid',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
         }}
       >
         <CPBuddyMenu
@@ -293,15 +302,18 @@ export const TestcaseView = memo(
               '& > span': { margin: '0 !important' },
               cursor: isDragging ? 'grabbing' : testcase.isDisabled ? 'not-allowed' : 'grab',
               pointerEvents: testcase.isDisabled ? 'none' : 'auto',
+              minHeight: '56px',
               '&[draggable="true"]': {
                 pointerEvents: 'auto',
               },
             }}
           >
-            <CPBuddyFlex smallGap>
-              <CPBuddyFlex sx={{ flex: 1 }}>
+            <CPBuddyFlex smallGap sx={{ width: '100%', alignItems: 'center' }}>
+              <Box sx={{ flex: 1 }} />
+              
+              <CPBuddyFlex sx={{ alignItems: 'center', justifyContent: 'center', gap: 1.5 }}>
                 <CPBuddyTooltip title={testcaseId}>
-                  <CPBuddyText sx={{ fontWeight: 'bold' }}>#{idx + 1}</CPBuddyText>
+                  <CPBuddyText sx={{ fontWeight: 700, fontSize: '1.1rem', color: 'text.secondary' }}>#{idx + 1}</CPBuddyText>
                 </CPBuddyTooltip>
                 {!!testcase.result?.verdict && (
                   <CPBuddyTooltip title={testcase.result.verdict.fullName}>
@@ -309,76 +321,83 @@ export const TestcaseView = memo(
                       label={testcase.result.verdict.name}
                       size='small'
                       sx={{
-                        backgroundColor: testcase.result.verdict.color,
-                        color: '#fff',
-                        fontWeight: 700,
-                        height: '22px',
+                        backgroundColor: 'transparent',
+                        border: `1px solid ${testcase.result.verdict.color}`,
+                        color: testcase.result.verdict.color,
+                        fontWeight: 600,
+                        height: '24px',
                         fontSize: '0.75rem',
+                        letterSpacing: '0.05em',
+                      }}
+                    />
+                  </CPBuddyTooltip>
+                )}
+                {!isNil(testcase.result?.memoryMb) && (
+                  <CPBuddyTooltip title={testcase.result.memoryMb}>
+                    <Chip
+                      label={t('testcaseView.memory', {
+                        memory: testcase.result.memoryMb.toFixed(1),
+                      })}
+                      size='small'
+                      variant='outlined'
+                      sx={{
+                        fontSize: '0.75rem',
+                        display: { xs: 'none', xl: 'flex' },
+                        borderColor: 'divider',
+                      }}
+                    />
+                  </CPBuddyTooltip>
+                )}
+                {!isNil(testcase.result?.timeMs) && (
+                  <CPBuddyTooltip title={testcase.result.timeMs}>
+                    <Chip
+                      label={t('testcaseView.time', {
+                        time: testcase.result.timeMs.toFixed(1),
+                      })}
+                      size='small'
+                      variant='outlined'
+                      sx={{
+                        fontSize: '0.75rem',
+                        display: { xs: 'none', lg: 'flex' },
+                        borderColor: 'divider',
                       }}
                     />
                   </CPBuddyTooltip>
                 )}
               </CPBuddyFlex>
-              {!isNil(testcase.result?.memoryMb) && (
-                <CPBuddyTooltip title={testcase.result.memoryMb}>
-                  <Chip
-                    label={t('testcaseView.memory', {
-                      memory: testcase.result.memoryMb.toFixed(1),
-                    })}
-                    size='small'
-                    variant='outlined'
-                    sx={{
-                      fontSize: '0.8rem',
-                      display: { xs: 'none', xl: 'flex' },
+
+              <CPBuddyFlex sx={{ flex: 1, justifyContent: 'flex-end', gap: 1 }}>
+                {isRunning ? (
+                  <CPBuddyButton
+                    name={t('testcaseView.stop')}
+                    icon={StopIcon}
+                    color='warning'
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      dispatch({ type: 'stopTestcases', problemId, testcaseId });
                     }}
                   />
-                </CPBuddyTooltip>
-              )}
-              {!isNil(testcase.result?.timeMs) && (
-                <CPBuddyTooltip title={testcase.result.timeMs}>
-                  <Chip
-                    label={t('testcaseView.time', {
-                      time: testcase.result.timeMs.toFixed(1),
-                    })}
-                    size='small'
-                    variant='outlined'
-                    sx={{
-                      fontSize: '0.8rem',
-                      display: { xs: 'none', lg: 'flex' },
+                ) : (
+                  <RunButtonGroup
+                    icon={PlayArrowIcon}
+                    name={t('testcaseView.run')}
+                    color='success'
+                    onRun={(forceCompile) => {
+                      dispatch({ type: 'runSingleTestcase', problemId, testcaseId, forceCompile });
                     }}
                   />
-                </CPBuddyTooltip>
-              )}
-              {isRunning ? (
+                )}
                 <CPBuddyButton
-                  name={t('testcaseView.stop')}
-                  icon={StopIcon}
-                  color='warning'
+                  name={t('testcaseView.delete')}
+                  icon={DeleteIcon}
+                  color='error'
                   onClick={(e) => {
                     e.stopPropagation();
-                    dispatch({ type: 'stopTestcases', problemId, testcaseId });
+                    dispatch({ type: 'deleteTestcase', problemId, testcaseId });
                   }}
+                  sx={{ display: { xs: 'none', md: 'flex' } }}
                 />
-              ) : (
-                <RunButtonGroup
-                  icon={PlayArrowIcon}
-                  name={t('testcaseView.run')}
-                  color='success'
-                  onRun={(forceCompile) => {
-                    dispatch({ type: 'runSingleTestcase', problemId, testcaseId, forceCompile });
-                  }}
-                />
-              )}
-              <CPBuddyButton
-                name={t('testcaseView.delete')}
-                icon={DeleteIcon}
-                color='error'
-                onClick={(e) => {
-                  e.stopPropagation();
-                  dispatch({ type: 'deleteTestcase', problemId, testcaseId });
-                }}
-                sx={{ display: { xs: 'none', md: 'flex' } }}
-              />
+              </CPBuddyFlex>
             </CPBuddyFlex>
           </AccordionSummary>
         </CPBuddyMenu>

@@ -22,9 +22,15 @@ export const CPBuddyButton = forwardRef<HTMLButtonElement, CPBuddyButtonProps>((
       size={props.larger ? 'medium' : 'small'}
       onClick={props.onClick}
       disabled={props.disabled}
-      sx={props.sx}
+      sx={{
+        transition: 'all 0.2s ease-in-out',
+        '&:hover': {
+          transform: props.larger ? 'scale(1.15)' : 'scale(1.1)',
+        },
+        ...props.sx
+      }}
     >
-      <props.icon fontSize='small' />
+      <props.icon fontSize={props.larger ? 'medium' : 'small'} />
     </IconButton>
   </CPBuddyTooltip>
 ));

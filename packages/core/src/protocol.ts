@@ -11,6 +11,8 @@ export interface CompanionProblem {
   name: string;
   group: string;
   url: string;
+  rating?: number;
+  difficulty?: string;
   interactive: boolean;
   memoryLimit: number;
   timeLimit: number;
