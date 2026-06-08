@@ -350,9 +350,9 @@ This project is licensed under the **GNU Affero General Public License v3.0** (A
 **Made with ❤️ by iambatman**
 
 <p align="center">
-  <a href="https://marketplace.visualstudio.com/items?itemName=AyushSharma.cpbuddy">VS Code</a> •
-  <a href="https://chrome.google.com/webstore/detail/cpbuddy-submit">Chrome</a> •
-  <a href="https://addons.mozilla.org/en-US/firefox/addon/cpbuddy/">Firefox</a> •
+  <a href="https://marketplace.visualstudio.com/items?itemName=AyushJha.cpbuddy">VS Code</a> •
+  <a href="https://github.com/codewithayuu/cp-buddy/releases/download/v1.0.1/cpbuddy-submit-1.0.1-chrome.zip">Chrome</a> •
+  <a href="https://github.com/codewithayuu/cp-buddy/releases/download/v1.0.1/cpbuddy-submit-1.0.1-firefox.zip">Firefox</a> •
   <a href="https://github.com/codewithayuu/cp-buddy">GitHub</a>
 </p>
 
