@@ -11,17 +11,17 @@ const copyDirFiles = (src: string, dst: string, ext?: string) => {
       cpSync(join(src, file.name), join(dst, file.name));
 };
 
-run('npx pnpm clean');
+run('pnpm clean');
 
-run('pnpm --filter @cpbuddy/vscode-webview run compile');
-run('pnpm --filter @cpbuddy/local-router run compile');
+run('pnpm --filter ./packages/vscode-webview run compile');
+run('pnpm --filter ./packages/local-router run compile');
 copyDirFiles('packages/vscode-webview/dist', 'packages/vscode-ext/dist');
 copyDirFiles('packages/local-router/dist', 'packages/vscode-ext/dist');
-run('pnpm --filter cpbuddy run compile');
+run('pnpm --filter ./packages/vscode-ext run compile');
 
-run('pnpm --filter @cpbuddy/browser-ext run compile');
-run('pnpm --filter cpbuddy run package');
-run('pnpm --filter @cpbuddy/browser-ext run package');
+run('pnpm --filter ./packages/browser-ext run compile');
+run('pnpm --filter ./packages/vscode-ext run package');
+run('pnpm --filter ./packages/browser-ext run package');
 copyDirFiles('packages/vscode-ext', 'dist', '.vsix');
 copyDirFiles('packages/browser-ext/dist', 'dist');
 
