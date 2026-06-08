@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <a href="https://marketplace.visualstudio.com/items?itemName=AyushSharma.cpbuddy">
+  <a href="https://marketplace.visualstudio.com/items?itemName=AyushJha.cpbuddy">
     <img src="https://img.shields.io/badge/VS%20Code-Extension-007ACC?style=for-the-badge&logo=visual-studio-code&logoColor=white" alt="VS Code Extension">
   </a>
   <a href="https://chrome.google.com/webstore/detail/cpbuddy-submit">
