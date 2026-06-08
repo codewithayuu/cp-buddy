@@ -307,6 +307,10 @@ code --extensionDevelopmentPath=${PWD}/cp-buddy
 - [x] Diff viewer
 - [x] Test import/export
 - [x] Code templates
+- [ ] Make core features more robust (test case handling, submission flow, error handling, performance)
+- [ ] Add support for more competitive programming platforms
+- [ ] Sublime Text support
+- [ ] Neovim support
 - [ ] Contest mode with timer
 - [ ] Interactive problems
 - [ ] AI-powered hints
