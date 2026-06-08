@@ -185,19 +185,10 @@ jobs:
           path: dist/*
           if-no-files-found: error
 
-      - name: Generate Provenance
-        if: |
-          (github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event.action != 'closed') &&
-          (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
-        uses: actions/attest-build-provenance@v4
-        with:
-          subject-path: dist/*
-
   publish:
     needs: [build]
     if: needs.build.outputs.version_changed == 'true' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    environment: production
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -225,36 +216,6 @@ jobs:
           ls -lh dist/
           echo "::endgroup::"
 
-      - name: Publish VS Code
-        continue-on-error: true
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
-        run: |
-          echo "::group::Publishing to VS Code Marketplace"
-          VERSION="${{ needs.build.outputs.version }}"
-          pnpm -C packages/vscode-ext exec vsce publish --allow-star-activation --no-dependencies -i ../../dist/cpbuddy-$VERSION.vsix
-          echo "::endgroup::"
-
-      - name: Publish Browser
-        continue-on-error: true
-        env:
-          EDGE_PRODUCT_ID: ${{ secrets.EDGE_PRODUCT_ID }}
-          EDGE_CLIENT_ID: ${{ secrets.EDGE_CLIENT_ID }}
-          EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}
-          EDGE_SKIP_SUBMIT_REVIEW: ${{ secrets.EDGE_SKIP_SUBMIT_REVIEW }}
-          FIREFOX_EXTENSION_ID: ${{ secrets.FIREFOX_EXTENSION_ID }}
-          FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}
-          FIREFOX_JWT_SECRET: ${{ secrets.FIREFOX_JWT_SECRET }}
-          FIREFOX_CHANNEL: ${{ secrets.FIREFOX_CHANNEL }}
-        run: |
-          echo "::group::Publishing to Browser Stores"
-          VERSION="${{ needs.build.outputs.version }}"
-          pnpm -C packages/browser-ext exec wxt submit \
-            --firefox-zip ../../dist/cpbuddy-submit-$VERSION-firefox.zip \
-            --firefox-sources-zip ../../dist/cpbuddy-submit-$VERSION-sources.zip \
-            --edge-zip ../../dist/cpbuddy-submit-$VERSION-chrome.zip
-          echo "::endgroup::"
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -269,8 +230,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Move cards in project
-        env:
-          GH_TOKEN: ${{ secrets.PROJECTS_GITHUB_TOKEN }}
-          PRE_RELEASE: ${{ needs.build.outputs.pre_release }}
-        run: bash scripts/move-cards.sh
+

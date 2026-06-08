@@ -4,16 +4,16 @@
   "type": "module",
   "license": "AGPL-3.0-only",
   "scripts": {
-    "compile": "pnpm -r --parallel compile",
+    "compile": "pnpm --filter '*' run compile",
     "package": "tsx scripts/package.ts",
-    "watch": "pnpm -r --parallel watch",
-    "test": "pnpm -r --parallel test",
-    "test:run": "pnpm -r --parallel test:run",
+    "watch": "pnpm --filter '*' run watch",
+    "test": "pnpm --filter '*' run test --reporter=verbose",
+    "test:run": "pnpm --filter '*' run test:run",
     "typecheck": "tsc --build",
     "lint": "biome check",
     "format": "biome check --write",
-    "clean": "pnpm -r --parallel clean && rimraf dist out scripts/out",
-    "check-translations": "pnpm -r --parallel check-translations",
+    "clean": "pnpm --filter '*' run clean && rimraf dist out scripts/out",
+    "check-translations": "pnpm --filter '*' run check-translations",
     "bump": "tsx scripts/bump-version.ts",
     "prepare": "tsx scripts/install-hooks.ts"
   },
@@ -40,23 +40,5 @@
     "webpack": "^5.106.1",
     "webpack-cli": "^7.0.2"
   },
-  "pnpm": {
-    "patchedDependencies": {
-      "ts-json-schema-generator@2.9.0": "patches/ts-json-schema-generator.patch"
-    },
-    "updateConfig": {
-      "ignoreDependencies": [
-        "@types/vscode",
-        "@types/node"
-      ]
-    },
-    "onlyBuiltDependencies": [
-      "@getgrit/cli",
-      "@swc/core",
-      "esbuild",
-      "protobufjs",
-      "sharp",
-      "spawn-sync"
-    ]
-  }
+
 }
