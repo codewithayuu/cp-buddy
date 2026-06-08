@@ -9,6 +9,8 @@ import type { IMsgHandle } from '@/application/useCases/webview/msgHandle';
 import { OpenFile } from '@/application/useCases/webview/OpenFile';
 import { OpenSettings } from '@/application/useCases/webview/OpenSettings';
 import { OpenTestlib } from '@/application/useCases/webview/OpenTestlib';
+import { GetAllSettings } from '@/application/useCases/webview/GetAllSettings';
+import { SetSetting } from '@/application/useCases/webview/SetSetting';
 import { ChooseSrcFile } from '@/application/useCases/webview/problem/ChooseSrcFile';
 import { EditProblemDetails } from '@/application/useCases/webview/problem/EditProblemDetails';
 import { CreateProblem } from '@/application/useCases/webview/problem/manage/CreateProblem';
@@ -16,6 +18,7 @@ import { DeleteProblem } from '@/application/useCases/webview/problem/manage/Del
 import { ImportProblem } from '@/application/useCases/webview/problem/manage/ImportProblem';
 import { RemoveSrcFile } from '@/application/useCases/webview/problem/RemoveSrcFile';
 import { Submit } from '@/application/useCases/webview/problem/Submit';
+import { MarkAccepted } from '@/application/useCases/webview/problem/MarkAccepted';
 import { StartStressTest } from '@/application/useCases/webview/problem/stressTest/StartStressTest';
 import { StopStressTest } from '@/application/useCases/webview/problem/stressTest/StopStressTest';
 import { ChooseTestcaseFile } from '@/application/useCases/webview/problem/testcase/ChooseTestcaseFile';
@@ -59,8 +62,11 @@ const UseCaseRegistry: Record<WebviewMsg['type'], InjectionToken<IMsgHandle<Webv
   stopStressTest: StopStressTest,
   stopTestcases: StopTestcases,
   submit: Submit,
+  markAccepted: MarkAccepted,
   toggleTestcaseFile: ToggleTestcaseFile,
   updateTestcase: UpdateTestcase,
+  getAllSettings: GetAllSettings,
+  setSetting: SetSetting,
 };
 
 @injectable()

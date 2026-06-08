@@ -156,7 +156,7 @@ export default (_env: Record<string, unknown>, argv: Record<string, unknown>): C
       new CopyPlugin({
         patterns: [
           { from: resolve(__dirname, '../vscode-webview/dist'), force: true },
-          { from: resolve(__dirname, '../vscode-router/dist'), force: true },
+          { from: resolve(__dirname, '../local-router/dist'), force: true },
         ],
       }),
     );

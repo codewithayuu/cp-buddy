@@ -42,4 +42,5 @@ export interface IWebviewEventBus {
   background(payload: IWebviewBackgroundProblem[]): void;
   noProblem(canImport: boolean): void;
   configChange(payload: Partial<WebviewConfig>): void;
+  allSettings(schema: any[], values: Record<string, any>): void;
 }

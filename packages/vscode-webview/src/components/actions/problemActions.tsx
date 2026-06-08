@@ -11,6 +11,7 @@ import { BackgroundProblemView } from '@/components/actions/backgroundProblemVie
 import { DeleteProblemDialog } from '@/components/actions/deleteProblemDialog';
 import { StressTestDialog } from '@/components/actions/stressTestDialog';
 import { SubmitDialog } from '@/components/actions/submitDialog';
+import { SettingsDialog } from '@/components/settingsDialog';
 import { CPBuddyButton } from '@/components/base/cpbuddyButton';
 import { CPBuddyFlex } from '@/components/base/cpbuddyFlex';
 import { RunButtonGroup } from '@/components/runButtonGroup';
@@ -39,6 +40,7 @@ export const ProblemActions = memo(
     const [clickTime, setClickTime] = useState<number[]>([]);
     const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [isStressTestDialogOpen, setStressTestDialogOpen] = useState(false);
+    const [isSettingsDialogOpen, setSettingsDialogOpen] = useState(false);
 
     useEffect(() => {
       if (clickTime.length === 10 && clickTime[9] - clickTime[0] < 2000) {
@@ -82,7 +84,7 @@ export const ProblemActions = memo(
             <CPBuddyButton
               icon={SettingsIcon}
               name={t('problemActions.settings', 'Settings')}
-              onClick={() => vscode.postMessage({ type: 'openSettings' })}
+              onClick={() => setSettingsDialogOpen(true)}
               larger
               sx={{ display: { xs: 'none', md: 'block' } }}
             />
@@ -141,6 +143,11 @@ export const ProblemActions = memo(
           onClose={() => setStressTestDialogOpen(false)}
           problemId={problemId}
           stressTest={stressTest}
+        />
+
+        <SettingsDialog
+          open={isSettingsDialogOpen}
+          onClose={() => setSettingsDialogOpen(false)}
         />
       </>
     );

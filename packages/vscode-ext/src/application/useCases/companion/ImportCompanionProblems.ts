@@ -57,12 +57,15 @@ export class ImportCompanionProblems {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
-                query: `query { question(titleSlug: "${titleSlug}") { difficulty } }`
+                query: `query { question(titleSlug: "${titleSlug}") { difficulty, codeSnippets { langSlug code } } }`
               })
             });
             const data: any = await res.json();
             if (data?.data?.question?.difficulty) {
               companionProblem.difficulty = data.data.question.difficulty;
+            }
+            if (data?.data?.question?.codeSnippets) {
+              companionProblem.codeSnippets = data.data.question.codeSnippets;
             }
           }
         } else if (companionProblem.url.includes('codeforces.com/')) {
@@ -144,12 +147,28 @@ export class ImportCompanionProblems {
           const { header, template } = await this.templateRenderer.render(problem);
           await this.fs.safeWriteFile(srcPath, header);
           
-          if (template.includes('$0') || template.includes('$1') || template.match(/\$\{\d+/)) {
-            snippetContent = template;
+          let finalTemplate = template;
+          if (companionProblem.codeSnippets) {
+            const ext = this.path.extname(srcPath).toLowerCase();
+            const extToLangSlug: Record<string, string> = {
+              '.cpp': 'cpp', '.c': 'c', '.py': 'python3', '.java': 'java',
+              '.js': 'javascript', '.ts': 'typescript', '.rs': 'rust', '.go': 'golang'
+            };
+            const langSlug = extToLangSlug[ext];
+            if (langSlug) {
+              const snippet = companionProblem.codeSnippets.find(
+                (s: any) => s.langSlug === langSlug || (langSlug === 'python3' && s.langSlug === 'python')
+              );
+              if (snippet) finalTemplate = snippet.code;
+            }
+          }
+          
+          if (finalTemplate.includes('$0') || finalTemplate.includes('$1') || finalTemplate.match(/\$\{\d+/)) {
+            snippetContent = finalTemplate;
           } else {
             // Append static template if it's not a snippet
             const current = await this.fs.readFile(srcPath);
-            await this.fs.safeWriteFile(srcPath, current + template);
+            await this.fs.safeWriteFile(srcPath, current + finalTemplate);
           }
         }
 

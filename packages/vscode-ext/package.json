@@ -5,8 +5,8 @@
   "version": "1.0.0",
   "type": "module",
   "license": "AGPL-3.0-only",
-  "publisher": "cpbuddy",
-  "icon": "res/cpbuddy.png",
+  "publisher": "AyushJha",
+  "icon": "res/cpbuddy-real.png",
   "galleryBanner": {
     "color": "#8adbae",
     "theme": "dark"
@@ -175,7 +175,7 @@
           "id": "cpbuddySidebar",
           "name": "%views.cpbuddyContainer.name%",
           "type": "webview",
-          "icon": "./res/panel-view-icon.svg"
+          "icon": "./res/cpbuddy-activitybar-v3.svg"
         }
       ]
     },
@@ -184,7 +184,7 @@
         {
           "id": "cpbuddyContainer",
           "title": "%viewsContainers.activitybar%",
-          "icon": "./res/panel-view-icon.svg"
+          "icon": "./res/cpbuddy-activitybar-v3.svg"
         }
       ]
     },
@@ -665,6 +665,23 @@
             "markdownDescription": "%config.sidebar.hiddenStatuses%"
           }
         }
+      },
+      {
+        "id": "github",
+        "order": 10,
+        "title": "%config.github%",
+        "properties": {
+          "cpbuddy.github.enabled": {
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "%config.github.enabled%"
+          },
+          "cpbuddy.github.commitMessageTemplate": {
+            "type": "string",
+            "default": "AC: {platform} - {problemName}",
+            "markdownDescription": "%config.github.commitMessageTemplate%"
+          }
+        }
       }
     ],
     "commands": [
@@ -699,6 +716,11 @@
       {
         "command": "cpbuddy.submit",
         "title": "%commands.submit%"
+      },
+      {
+        "command": "cpbuddy.markAccepted",
+        "title": "%commands.markAccepted%",
+        "icon": "$(check)"
       }
     ],
     "keybindings": [

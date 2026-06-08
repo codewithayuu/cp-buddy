@@ -13,6 +13,7 @@ import { TestcaseView } from '@/components/testcaseView';
 import { useConfigState } from '@/context/ConfigContext';
 import { useProblemDispatch, useProblemUiDispatch } from '@/context/ProblemContext';
 import BackupIcon from '@mui/icons-material/Backup';
+import CheckIcon from '@mui/icons-material/Check';
 import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
 import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove';
 import { CPBuddyButton } from '@/components/base/cpbuddyButton';
@@ -140,16 +141,25 @@ export const TestcasesView = memo(({ problemId, testcaseOrder, testcases, hasRun
           />
         )}
         {!!url && (
-          <CPBuddyButton
-            larger
-            name={t('problemActions.submit')}
-            icon={BackupIcon}
-            color='secondary'
-            onClick={() => {
-              if (config.confirmSubmit) uiDispatch({ type: 'openSubmitDialog', problemId });
-              else dispatch({ type: 'submit', problemId });
-            }}
-          />
+          <>
+            <CPBuddyButton
+              larger
+              name={t('problemActions.submit')}
+              icon={BackupIcon}
+              color='secondary'
+              onClick={() => {
+                if (config.confirmSubmit) uiDispatch({ type: 'openSubmitDialog', problemId });
+                else dispatch({ type: 'submit', problemId });
+              }}
+            />
+            <CPBuddyButton
+              larger
+              name={t('problemActions.markAccepted', 'Mark AC & Push')}
+              icon={CheckIcon}
+              color='success'
+              onClick={() => dispatch({ type: 'markAccepted', problemId })}
+            />
+          </>
         )}
       </CPBuddyFlex>
       {testcaseOrder.length ? (

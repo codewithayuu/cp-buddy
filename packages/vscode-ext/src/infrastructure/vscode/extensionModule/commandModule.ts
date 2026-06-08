@@ -15,6 +15,7 @@ import type { IWebviewEventBus } from '@/application/ports/vscode/IWebviewEventB
 import { CreateProblem } from '@/application/useCases/webview/problem/manage/CreateProblem';
 import { ImportProblem } from '@/application/useCases/webview/problem/manage/ImportProblem';
 import { Submit } from '@/application/useCases/webview/problem/Submit';
+import { MarkAccepted } from '@/application/useCases/webview/problem/MarkAccepted';
 import { RunAllTestcases } from '@/application/useCases/webview/problem/testcase/run/RunAllTestcases';
 import { StopTestcases } from '@/application/useCases/webview/problem/testcase/run/StopTestcases';
 import { TOKENS } from '@/composition/tokens';
@@ -41,6 +42,7 @@ export class CommandModule implements IExtensionModule {
     @inject(RunAllTestcases) private readonly runAllTestcases: RunAllTestcases,
     @inject(StopTestcases) private readonly stopTestcases: StopTestcases,
     @inject(Submit) private readonly submit: Submit,
+    @inject(MarkAccepted) private readonly markAccepted: MarkAccepted,
   ) {}
 
   private async getProblemId() {
@@ -86,6 +88,12 @@ export class CommandModule implements IExtensionModule {
         }
         await this.submit.exec({
           type: 'submit',
+          problemId: await this.getProblemId(),
+        });
+      },
+      'cpbuddy.markAccepted': async () => {
+        await this.markAccepted.exec({
+          type: 'markAccepted',
           problemId: await this.getProblemId(),
         });
       },
