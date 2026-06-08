@@ -4,16 +4,11 @@
   "type": "module",
   "license": "AGPL-3.0-only",
   "scripts": {
-    "compile": "pnpm --filter '*' run compile",
     "package": "tsx scripts/package.ts",
-    "watch": "pnpm --filter '*' run watch",
-    "test": "pnpm --filter '*' run test --reporter=verbose",
-    "test:run": "pnpm --filter '*' run test:run",
     "typecheck": "tsc --build",
     "lint": "biome check",
     "format": "biome check --write",
     "clean": "rimraf packages/*/dist packages/*/out packages/*/scripts/out dist out scripts/out",
-    "check-translations": "pnpm --filter '*' run check-translations",
     "bump": "tsx scripts/bump-version.ts",
     "prepare": "tsx scripts/install-hooks.ts"
   },

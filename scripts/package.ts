@@ -13,11 +13,15 @@ const copyDirFiles = (src: string, dst: string, ext?: string) => {
 
 run('npx pnpm clean');
 
-run('npx pnpm compile');
+run('pnpm --filter vscode-webview run compile');
+run('pnpm --filter local-router run compile');
+run('pnpm --filter vscode-ext run compile');
 copyDirFiles('packages/vscode-webview/dist', 'packages/vscode-ext/dist');
 copyDirFiles('packages/local-router/dist', 'packages/vscode-ext/dist');
 
-run('npx pnpm -r --parallel package');
+run('pnpm --filter browser-ext run compile');
+run('pnpm --filter vscode-ext run package');
+run('pnpm --filter browser-ext run package');
 copyDirFiles('packages/vscode-ext', 'dist', '.vsix');
 copyDirFiles('packages/browser-ext/dist', 'dist');
 
