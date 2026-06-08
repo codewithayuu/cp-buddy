@@ -14,9 +14,9 @@ pkg:vscode-ext:
   - changed-files:
       - any-glob-to-any-file: "packages/vscode-ext/**"
 
-pkg:vscode-router:
+pkg:local-router:
   - changed-files:
-      - any-glob-to-any-file: "packages/vscode-router/**"
+      - any-glob-to-any-file: "packages/local-router/**"
 
 pkg:vscode-webview:
   - changed-files:

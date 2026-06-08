@@ -121,6 +121,10 @@ export interface DragDropMsg extends BaseMsg {
   items: string[];
 }
 
+export interface MarkAcceptedMsg extends ProblemBaseMsg {
+  type: 'markAccepted';
+}
+
 export type ProblemMsg =
   | EditProblemDetailsMsg
   | DeleteProblemMsg
@@ -142,7 +146,17 @@ export type ProblemMsg =
   | StartStressTestMsg
   | StopStressTestMsg
   | SubmitMsg
+  | MarkAcceptedMsg
   | DragDropMsg;
+
+export interface GetAllSettingsMsg extends BaseMsg {
+  type: 'getAllSettings';
+}
+export interface SetSettingMsg extends BaseMsg {
+  type: 'setSetting';
+  key: string;
+  value: any;
+}
 
 export type WebviewMsg =
   | ProblemMsg
@@ -151,4 +165,6 @@ export type WebviewMsg =
   | InitMsg
   | OpenFileMsg
   | OpenTestlibMsg
-  | OpenSettingsMsg;
+  | OpenSettingsMsg
+  | GetAllSettingsMsg
+  | SetSettingMsg;

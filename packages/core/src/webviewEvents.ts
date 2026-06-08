@@ -27,6 +27,7 @@ const WebviewEventName = {
   NO_PROBLEM: 'NO_PROBLEM',
   CONFIG_CHANGE: 'CONFIG_CHANGE',
   OPEN_SUBMIT_DIALOG: 'OPEN_SUBMIT_DIALOG',
+  ALL_SETTINGS: 'ALL_SETTINGS',
 } as const;
 
 interface WebviewFullProblemEvent {
@@ -94,6 +95,12 @@ export interface WebviewOpenSubmitDialogEvent {
   problemId: ProblemId;
 }
 
+export interface WebviewAllSettingsEvent {
+  type: typeof WebviewEventName.ALL_SETTINGS;
+  schema: any[];
+  values: Record<string, any>;
+}
+
 export type WebviewEvent =
   | WebviewFullProblemEvent
   | WebviewPatchMetaEvent
@@ -105,4 +112,5 @@ export type WebviewEvent =
   | WebviewBackgroundEvent
   | WebviewNoProblemEvent
   | WebviewConfigChangeEvent
-  | WebviewOpenSubmitDialogEvent;
+  | WebviewOpenSubmitDialogEvent
+  | WebviewAllSettingsEvent;

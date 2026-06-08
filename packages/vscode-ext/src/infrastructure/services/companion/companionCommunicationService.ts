@@ -82,7 +82,7 @@ export class CompanionCommunicationService {
       reconnectionDelayMax: 3000,
       timeout: 1000,
       autoConnect: true,
-      query: { clientId: this.clientId, type: 'vscode' },
+      query: { clientId: this.clientId, type: 'editor' },
     });
     this.bindEvents();
   }

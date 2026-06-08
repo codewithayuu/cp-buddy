@@ -17,7 +17,7 @@ export default defineConfig({
   webExt: { disabled: true },
   modules: ['@wxt-dev/auto-icons'],
   autoIcons: {
-    baseIconPath: resolve(__dirname, '../core/res/cpbuddy.png'),
+    baseIconPath: resolve(__dirname, '../core/res/cpbuddy-main.png'),
   },
   zip: {
     name: 'cpbuddy-submit',
@@ -97,5 +97,13 @@ export default defineConfig({
         },
       },
     },
+    plugins: [
+      {
+        name: 'remove-eval',
+        transform(code) {
+          return code.replace(/Function\(['"]return this['"]\)\(\)/g, 'globalThis');
+        }
+      }
+    ],
   }),
 });

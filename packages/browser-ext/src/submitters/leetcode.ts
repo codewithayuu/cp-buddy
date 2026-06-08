@@ -17,38 +17,26 @@ export class LeetCodeSubmitter extends BaseSubmitter {
   }
 
   public async fill(data: SubmitData) {
-    // Wait for Monaco Editor's content area
+    // Wait for Monaco Editor to load by checking for the view-lines element
     await this.waitFor(() => document.querySelectorAll('.view-lines').length > 0);
-    const viewLines = document.querySelectorAll<HTMLElement>('.view-lines');
-    // LeetCode's main code editor is typically the last .view-lines (after notes editor)
-    const editorEl = viewLines[viewLines.length - 1];
-    if (!editorEl) throw new Error('Editor not found');
 
-    // Focus the editor
-    editorEl.click();
-    
-    // Select all existing code
-    const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-    const ctrlKey = isMac ? 'metaKey' : 'ctrlKey';
-    
-    const keydownEvent = new KeyboardEvent('keydown', {
-      key: 'a',
-      code: 'KeyA',
-      bubbles: true,
-      cancelable: true,
-      [ctrlKey]: true
-    });
-    editorEl.dispatchEvent(keydownEvent);
-    
-    // Simulate pasting the new code
-    const dataTransfer = new DataTransfer();
-    dataTransfer.setData('text/plain', data.sourceCode);
-    const pasteEvent = new ClipboardEvent('paste', {
-      clipboardData: dataTransfer,
-      bubbles: true,
-      cancelable: true,
-    });
-    editorEl.dispatchEvent(pasteEvent);
+    // Inject a script into the main world to interact with Monaco directly
+    const script = document.createElement('script');
+    script.textContent = `
+      try {
+        if (window.monaco && window.monaco.editor) {
+          const models = window.monaco.editor.getModels();
+          if (models.length > 0) {
+            // Usually the first model or the active one
+            models[0].setValue(${JSON.stringify(data.sourceCode)});
+          }
+        }
+      } catch(e) {
+        console.error('Failed to set Monaco value', e);
+      }
+    `;
+    document.body.appendChild(script);
+    script.remove();
 
     // Wait a brief moment for Monaco Editor/React state to register the pasted code
     await new Promise(resolve => setTimeout(resolve, 500));

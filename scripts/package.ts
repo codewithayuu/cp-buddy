@@ -15,11 +15,15 @@ run('npx pnpm clean');
 
 run('npx pnpm compile');
 copyDirFiles('packages/vscode-webview/dist', 'packages/vscode-ext/dist');
-copyDirFiles('packages/vscode-router/dist', 'packages/vscode-ext/dist');
+copyDirFiles('packages/local-router/dist', 'packages/vscode-ext/dist');
 
 run('npx pnpm -r --parallel package');
 copyDirFiles('packages/vscode-ext', 'dist', '.vsix');
 copyDirFiles('packages/browser-ext/dist', 'dist');
+
+// Package sublime-ext
+copyDirFiles('packages/local-router/dist', 'packages/sublime-ext/router');
+run('cd packages/sublime-ext && zip -r ../../dist/CPBuddy.sublime-package .');
 
 console.log('\n=== Build complete ===');
 console.log('Output files:');

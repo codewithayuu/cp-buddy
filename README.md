@@ -35,10 +35,15 @@
 
 **CPBuddy** is a next-generation VS Code extension that transforms your editor into a powerful competitive programming IDE. Parse problems from any online judge, run test cases instantly, and submit solutions directly from VS Code — all in one seamless workflow.
 
-<!-- Screenshot placeholder - add your own screenshot here -->
-<!-- <div align="center">
-<img src="./docs/screenshot.png" alt="CPBuddy Screenshot" width="800">
-</div> -->
+<div align="center">
+
+### 📸 Screenshots
+
+<img src="./screenshots/Screenshot_20260608_191114.png" alt="CPBuddy Sidebar" width="600">
+<img src="./screenshots/Screenshot_20260608_191129.png" alt="CPBuddy Test Cases" width="600">
+<img src="./screenshots/Screenshot_20260608_191138.png" alt="CPBuddy Webview" width="600">
+
+</div>
 
 ## ✨ Features
 
@@ -81,7 +86,7 @@
 
 ```bash
 # Or install via command line
-code --install-extension AyushSharma.cpbuddy
+code --install-extension AyushJha.cpbuddy
 ```
 
 ### Browser Extensions (Required for Submission)

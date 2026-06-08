@@ -16,6 +16,7 @@ import {
 import type { IDocument } from '@/application/ports/vscode/IDocument';
 import type { ISettings } from '@/application/ports/vscode/ISettings';
 import { BaseProblemUseCase } from '@/application/useCases/webview/problem/BaseProblemUseCase';
+import { MarkAccepted } from '@/application/useCases/webview/problem/MarkAccepted';
 import { TOKENS } from '@/composition/tokens';
 import type { BackgroundProblem } from '@/domain/entities/backgroundProblem';
 
@@ -29,6 +30,7 @@ export class RunAllTestcases extends BaseProblemUseCase<RunAllTestcasesMsg> {
     @inject(TOKENS.settings) private readonly settings: ISettings,
     @inject(TOKENS.testcaseIoService) private readonly testcaseIoService: ITestcaseIoService,
     @inject(TOKENS.tempStorage) private readonly tmp: ITempStorage,
+    @inject(MarkAccepted) private readonly markAccepted: MarkAccepted,
   ) {
     super(repo);
   }
@@ -141,6 +143,19 @@ export class RunAllTestcases extends BaseProblemUseCase<RunAllTestcasesMsg> {
 
         if (stdinPathResult.needDispose) this.tmp.dispose(stdinPathResult.path);
         if (answerPathResult.needDispose) this.tmp.dispose(answerPathResult.path);
+      }
+
+      if (
+        testcaseOrder.length > 0 &&
+        testcaseOrder.every(
+          (id) => problem.getTestcase(id).result?.verdict === VerdictName.accepted,
+        ) &&
+        this.settings.github.enabled
+      ) {
+        await this.markAccepted.exec({
+          type: 'markAccepted',
+          problemId: problem.id,
+        });
       }
     } finally {
       bgProblem.abort();

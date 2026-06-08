@@ -96,4 +96,8 @@ export class WebviewEventBusAdapter implements IWebviewEventBus {
     this.logger.debug('Emitting configChange event', { payload });
     this.emitter.emit('message', { type: 'CONFIG_CHANGE', payload });
   }
+  public allSettings(schema: any[], values: Record<string, any>): void {
+    this.logger.debug('Emitting ALL_SETTINGS event');
+    this.emitter.emit('message', { type: 'ALL_SETTINGS', schema, values });
+  }
 }

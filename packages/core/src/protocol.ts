@@ -13,6 +13,7 @@ export interface CompanionProblem {
   url: string;
   rating?: number;
   difficulty?: string;
+  codeSnippets?: { langSlug: string; code: string }[];
   interactive: boolean;
   memoryLimit: number;
   timeLimit: number;

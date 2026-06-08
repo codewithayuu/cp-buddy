@@ -12,6 +12,6 @@
     { "path": "packages/vscode-ext/tsconfig.test.json" },
     { "path": "packages/vscode-webview" },
     { "path": "packages/vscode-webview/scripts" },
-    { "path": "packages/vscode-router" }
+    { "path": "packages/local-router" }
   ]
 }

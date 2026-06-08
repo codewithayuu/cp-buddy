@@ -69,6 +69,40 @@ jobs:
       - name: Setup Node and pnpm
         uses: ./.github/actions/setup-node-pnpm
 
+      - name: Auto-bump patch version
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "::group::Auto-bumping patch version"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          CURRENT=$(node -p "require('./.cpbuddy-release.json').version")
+          IFS='.' read -r MAJ MIN PAT <<< "$CURRENT"
+          NEW="$MAJ.$MIN.$((PAT + 1))"
+          echo "Bumping $CURRENT -> $NEW"
+
+          # Update .cpbuddy-release.json
+          node -e "
+            const c = require('./.cpbuddy-release.json');
+            c.previousVersion = c.version;
+            c.version = '$NEW';
+            require('fs').writeFileSync('./.cpbuddy-release.json', JSON.stringify(c, null, 2) + '\n');
+          "
+
+          # Update all package.json files under packages/
+          for f in packages/*/package.json; do
+            node -e "
+              const p = require('./$f');
+              p.version = '$NEW';
+              require('fs').writeFileSync('./$f', JSON.stringify(p, null, 2) + '\n');
+            "
+          done
+
+          git add -A
+          git commit -m "chore: bump version to $NEW [skip ci]" || echo "Nothing to commit"
+          git push
+          echo "::endgroup::"
+
       - name: Detect version changes
         id: versions
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
@@ -262,7 +296,10 @@ jobs:
         with:
           tag_name: v${{ needs.build.outputs.version }}
           name: CPBuddy v${{ needs.build.outputs.version }}
-          files: ./dist/*
+          files: |
+            ./dist/cpbuddy-${{ needs.build.outputs.version }}.vsix
+            ./dist/cpbuddy-submit-${{ needs.build.outputs.version }}-chrome.zip
+            ./dist/cpbuddy-submit-${{ needs.build.outputs.version }}-firefox.zip
           prerelease: ${{ needs.build.outputs.pre_release }}
           generate_release_notes: true
         env:
