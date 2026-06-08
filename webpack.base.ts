@@ -1,5 +1,6 @@
 // biome-ignore-all lint/style/useNamingConvention: Terser API requires snake_case
 
+import { resolve } from 'node:path';
 import TerserPlugin from 'terser-webpack-plugin';
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 import type { Configuration } from 'webpack';
@@ -11,6 +12,7 @@ export const makeBaseConfig = (
   mode: isProd ? 'production' : 'development',
   devtool: 'source-map',
   resolve: {
+    modules: [resolve(import.meta.dirname, 'node_modules'), 'node_modules'],
     extensions: ['.tsx', '.ts', '.js', '.jsx', '.json'],
     plugins: [
       new TsconfigPathsPlugin({
