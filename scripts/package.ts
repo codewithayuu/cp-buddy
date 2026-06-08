@@ -14,10 +14,10 @@ const copyDirFiles = (src: string, dst: string, ext?: string) => {
 run('pnpm clean');
 
 for (const pkg of ['vscode-webview', 'local-router']) {
-  run(`cd packages/${pkg} && pnpm compile`);
+  run('pnpm exec webpack --mode production --config packages/' + pkg + '/webpack.config.ts');
   copyDirFiles(`packages/${pkg}/dist`, 'packages/vscode-ext/dist');
 }
-run('cd packages/vscode-ext && pnpm compile');
+run('pnpm exec webpack --mode production --config packages/vscode-ext/webpack.config.ts');
 
 run('cd packages/browser-ext && pnpm compile');
 run('cd packages/vscode-ext && pnpm package');
