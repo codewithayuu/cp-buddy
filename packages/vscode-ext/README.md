@@ -45,7 +45,7 @@ CPBuddy Submit lets you submit solutions directly from VS Code to online judges.
 
 | Chrome | Firefox |
 |--------|---------|
-| <a href="https://chrome.google.com/webstore/detail/cpbuddy-submit"><img src="https://img.shields.io/badge/Get%20CPBuddy-Chrome%20Web%20Store-4285F4?style=flat-square&logo=google-chrome&logoColor=white" width="200"></a> | <a href="https://addons.mozilla.org/en-US/firefox/addon/cpbuddy/"><img src="https://img.shields.io/badge/Get%20CPBuddy-Firefox%20Add--ons-FF7139?style=flat-square&logo=firefox-browser&logoColor=white" width="200"></a> |
+| <a href="https://chrome.google.com/webstore/detail/cpbuddy-submit"><img src="https://img.shields.io/badge/Get%20CPBuddy-Chrome%20Web%20Store-4285F4?style=flat-square&logo=google-chrome&logoColor=white" width="200"></a> | <a href="https://addons.mozilla.org/en-US/firefox/addon/cpbuddy-submit/"><img src="https://img.shields.io/badge/Get%20CPBuddy-Firefox%20Add--ons-FF7139?style=flat-square&logo=firefox-browser&logoColor=white" width="200"></a> |
 
 ### Competitive Companion (Required for Problem Parsing)
 

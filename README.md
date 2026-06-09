@@ -14,7 +14,7 @@
   <a href="https://chrome.google.com/webstore/detail/cpbuddy-submit">
     <img src="https://img.shields.io/badge/Chrome-Extension-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Chrome Extension">
   </a>
-  <a href="https://addons.mozilla.org/en-US/firefox/addon/cpbuddy/">
+  <a href="https://addons.mozilla.org/en-US/firefox/addon/cpbuddy-submit/">
     <img src="https://img.shields.io/badge/Firefox-Add--on-FF7139?style=for-the-badge&logo=firefox-browser&logoColor=white" alt="Firefox Add-on">
   </a>
 </p>
@@ -105,7 +105,7 @@ code --install-extension AyushJha.cpbuddy
 </td>
 <td align="center" width="50%">
 
-<a href="https://addons.mozilla.org/en-US/firefox/addon/cpbuddy/">
+<a href="https://addons.mozilla.org/en-US/firefox/addon/cpbuddy-submit/">
 <img src="https://upload.wikimedia.org/wikipedia/commons/a/a0/Firefox_logo%2C_2019.svg" width="64" height="64" alt="Firefox Logo">
 <br><br>
 <img src="https://img.shields.io/badge/Get%20CPBuddy-Firefox%20Add--ons-FF7139?style=flat-square&logo=firefox-browser&logoColor=white" width="200">
