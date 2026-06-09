@@ -10,8 +10,9 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
 import MD5 from 'crypto-js/md5';
+import confetti from 'canvas-confetti';
 import { isNil } from 'lodash';
-import { type DragEvent, memo, useMemo } from 'react';
+import { type DragEvent, memo, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CPBuddyButton } from '@/components/base/cpbuddyButton';
 import { CPBuddyFlex } from '@/components/base/cpbuddyFlex';
@@ -53,6 +54,29 @@ export const TestcaseView = memo(
     const dispatch = useProblemDispatch();
     const isRunning = testcase.result?.verdict.type === VerdictType.running;
     const expanded = testcase.isDisabled ? false : isExpand;
+    
+    useEffect(() => {
+      if (testcase.result?.verdict.id === 'AC') {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      }
+    }, [testcase.result?.verdict.id]);
+
+    const verdictColor = window.easterEgg
+      ? (() => {
+          const hash = MD5(JSON.stringify(testcase)).words;
+          let color = 0;
+          for (let i = 0; i < hash.length; i++) {
+            color = (color << 4) + hash[i];
+          }
+          color = (((color >> 16) & 0xff) << 16) | (((color >> 8) & 0xff) << 8) | (color & 0xff);
+          return `#${color.toString(16).padStart(6, '0')}`;
+        })()
+      : testcase.result?.verdict?.color;
+
     const details = useMemo(
       () => (
         <CPBuddyFlex column>
@@ -144,6 +168,7 @@ export const TestcaseView = memo(
                 <TestcaseDataView
                   label={t('testcaseView.stdout')}
                   value={testcase.result.stdout}
+                  color={verdictColor}
                   readOnly
                   outputActions={{
                     onSetAnswer: () =>
@@ -176,6 +201,7 @@ export const TestcaseView = memo(
                 <TestcaseDataView
                   label={t('testcaseView.stderr')}
                   value={testcase.result.stderr}
+                  color={verdictColor}
                   readOnly
                   onOpenVirtual={() => {
                     dispatch({
@@ -192,6 +218,7 @@ export const TestcaseView = memo(
                 <TestcaseDataView
                   label={t('testcaseView.message')}
                   value={{ type: 'string', data: testcase.result.msg }}
+                  color={verdictColor}
                   readOnly
                 />
               </ErrorBoundary>
@@ -211,20 +238,9 @@ export const TestcaseView = memo(
         testcase.stdin,
         testcaseId,
         t,
+        verdictColor,
       ],
     );
-
-    const verdictColor = window.easterEgg
-      ? (() => {
-          const hash = MD5(JSON.stringify(testcase)).words;
-          let color = 0;
-          for (let i = 0; i < hash.length; i++) {
-            color = (color << 4) + hash[i];
-          }
-          color = (((color >> 16) & 0xff) << 16) | (((color >> 8) & 0xff) << 8) | (color & 0xff);
-          return `#${color.toString(16).padStart(6, '0')}`;
-        })()
-      : testcase.result?.verdict?.color;
 
     return (
       <Accordion

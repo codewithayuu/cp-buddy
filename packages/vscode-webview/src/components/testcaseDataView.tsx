@@ -33,6 +33,7 @@ interface CodeMirrorSectionProps {
   readOnly?: boolean;
   autoFocus?: boolean;
   tabIndex?: number;
+  color?: string;
 }
 
 const ansiToReact = (ansi: string) => {
@@ -91,6 +92,7 @@ export const TestcaseDataView = memo(
     readOnly,
     autoFocus,
     tabIndex,
+    color,
   }: CodeMirrorSectionProps) => {
     const { t } = useTranslation();
     const dispatch = useProblemDispatch();
@@ -135,8 +137,8 @@ export const TestcaseDataView = memo(
       scrollbarWidth: 'thin',
       scrollbarColor: 'rgba(127, 127, 127, 0.5) transparent',
       color: 'unset',
-      backgroundColor: 'rgba(127, 127, 127, 0.1)',
-      border: 'solid 2px rgba(127, 127, 127, 0.2)',
+      backgroundColor: color ? `${color}1A` : 'rgba(127, 127, 127, 0.1)',
+      border: `solid 2px ${color ? `${color}40` : 'rgba(127, 127, 127, 0.2)'}`,
       borderRadius: '4px',
       padding: '4px',
       boxSizing: 'border-box',

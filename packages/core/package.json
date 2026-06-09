@@ -1,6 +1,6 @@
 {
   "name": "@cpbuddy/core",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": true,
   "type": "module",
   "license": "AGPL-3.0-only",
@@ -12,6 +12,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "clean": "rimraf out"
+    "clean": "rimraf out",
+    "check-translations": "echo 'No translations to check'"
   }
 }

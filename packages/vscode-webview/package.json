@@ -1,6 +1,6 @@
 {
   "name": "@cpbuddy/vscode-webview",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": true,
   "type": "module",
   "license": "AGPL-3.0-only",
@@ -17,6 +17,7 @@
     "@mui/lab": "9.0.0-beta.2",
     "@mui/material": "^9.0.0",
     "anser": "^2.3.5",
+    "canvas-confetti": "^1.9.4",
     "crypto-js": "^4.2.0",
     "i18next": "^26.0.4",
     "immer": "^11.1.4",
@@ -28,6 +29,7 @@
     "stacktrace-js": "^2.0.2"
   },
   "devDependencies": {
+    "@types/canvas-confetti": "^1.9.0",
     "@types/crypto-js": "^4.2.2",
     "@types/lodash": "^4.17.24",
     "@types/react": "^19.2.14",
