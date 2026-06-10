@@ -51,11 +51,6 @@ const Main = () => {
           ) : (
             <CreateProblemView canImport={problem.currentProblem.canImport} />
           )}
-          {isNarrow && (
-            <Alert severity='info' sx={{ fontSize: '0.75rem', py: 0 }}>
-              {t('main.narrowWidthAlert')}
-            </Alert>
-          )}
         </CPBuddyFlex>
       </ErrorBoundary>
     </>

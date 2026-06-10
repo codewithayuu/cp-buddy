@@ -137,8 +137,8 @@ export const TestcaseDataView = memo(
       scrollbarWidth: 'thin',
       scrollbarColor: 'rgba(127, 127, 127, 0.5) transparent',
       color: 'unset',
-      backgroundColor: color ? `${color}1A` : 'rgba(127, 127, 127, 0.1)',
-      border: `solid 2px ${color ? `${color}40` : 'rgba(127, 127, 127, 0.2)'}`,
+      backgroundColor: color ? `${color}33` : 'rgba(127, 127, 127, 0.1)',
+      border: `solid 2px ${color ? `${color}FF` : 'rgba(127, 127, 127, 0.2)'}`,
       borderRadius: '4px',
       padding: '4px',
       boxSizing: 'border-box',
@@ -146,7 +146,6 @@ export const TestcaseDataView = memo(
       outline: 'none',
     };
 
-    if (value.type === 'string' && !value.data && readOnly) return null;
     return (
       <CPBuddyFlex column smallGap>
         <CPBuddyFlex sx={{ justifyContent: 'space-between' }}>

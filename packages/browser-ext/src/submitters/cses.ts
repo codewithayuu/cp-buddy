@@ -9,11 +9,12 @@ export class CSESSubmitter extends BaseSubmitter {
 
   public getSubmitUrl(data: SubmitData) {
     const url = new URL(data.url);
-    const isProblem = url.pathname.match(this.problemRegex)?.groups;
-    if (isProblem) {
-      url.pathname = `/problemset/submit/${isProblem.problem}`;
-    } else throw new ExtractError('type');
-    return url.toString();
+    if (url.pathname.includes('/submit/')) return url.toString();
+    if (url.pathname.includes('/task/')) {
+      url.pathname = url.pathname.replace('/task/', '/submit/');
+      return url.toString();
+    }
+    throw new ExtractError('type');
   }
 
   public async fill(data: SubmitData) {
