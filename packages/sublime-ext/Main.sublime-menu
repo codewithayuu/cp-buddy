@@ -9,7 +9,9 @@
                 "children":
                 [
                     { "caption": "Start Background Router", "command": "cpbuddy_start_router" },
-                    { "caption": "Run Test Cases", "command": "cpbuddy_testcases" }
+                    { "caption": "Run Test Cases", "command": "cpbuddy_testcases" },
+                    { "caption": "Submit Code", "command": "cpbuddy_submit" },
+                    { "caption": "Delete Problem", "command": "cpbuddy_delete_problem" }
                 ]
             }
         ]
