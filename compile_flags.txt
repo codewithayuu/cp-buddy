@@ -1,0 +1,10 @@
+-std=c++17
+-O2
+-Wall
+-Wextra
+-DLOCAL
+-I/usr/include/c++/16.1.1
+-I/usr/include/c++/16.1.1/x86_64-pc-linux-gnu
+-I/usr/include/c++/16.1.1/backward
+-I/usr/lib/gcc/x86_64-pc-linux-gnu/16.1.1/include
+-I/usr/local/include

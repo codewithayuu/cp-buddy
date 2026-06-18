@@ -329,11 +329,24 @@ class CpbuddyTestcasesCommand(sublime_plugin.TextCommand):
             results_view.run_command("append", {"characters": text})
             results_view.show(results_view.size())
             
-        append_text("CPBuddy: Compiling {}\n".format(filename))
-        
         def run_tests():
             try:
-                # Compile
+                # 1. Fetch proper timeLimit from .bin file
+                bin_file = os.path.join(cpbuddy_dir, safe_name + ".bin")
+                time_limit_ms = 2000
+                if os.path.exists(bin_file):
+                    try:
+                        import gzip, json
+                        with open(bin_file, "rb") as f:
+                            data = json.loads(gzip.decompress(f.read()).decode("utf-8"))
+                            time_limit_ms = data.get("timeLimit", 2000)
+                    except:
+                        pass
+                
+                raw_outputs = []
+                summary_lines = []
+
+                # Compile silently
                 compile_proc = subprocess.Popen(
                     ["g++", "-O2", "-std=c++17", filepath, "-o", binary_path],
                     stdout=subprocess.PIPE, stderr=subprocess.PIPE
@@ -343,9 +356,7 @@ class CpbuddyTestcasesCommand(sublime_plugin.TextCommand):
                     append_text("Compilation Error: 🚨\n" + c_err.decode())
                     return
                 
-                append_text("Compilation Successful!\n\n")
-                
-                # Find test cases
+                # Find and run test cases
                 test_idx = 1
                 while True:
                     in_file = os.path.join(cpbuddy_dir, "test{}.in".format(test_idx))
@@ -353,7 +364,6 @@ class CpbuddyTestcasesCommand(sublime_plugin.TextCommand):
                     if not os.path.exists(in_file):
                         break
                         
-                    append_text("--- Test {} ---\n".format(test_idx))
                     try:
                         with open(in_file, "r") as f:
                             in_data = f.read()
@@ -370,38 +380,48 @@ class CpbuddyTestcasesCommand(sublime_plugin.TextCommand):
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE
                         )
-                        out, err = proc.communicate(input=in_data.encode(), timeout=2.0)
+                        
+                        timeout_sec = time_limit_ms / 1000.0
+                        out, err = proc.communicate(input=in_data.encode(), timeout=timeout_sec)
                         elapsed = (time.time() - start_time) * 1000
                         
                         out_str = out.decode().strip()
                         err_str = err.decode().strip()
                         
+                        if out_str:
+                            raw_outputs.append(out_str)
+                        
                         if proc.returncode != 0:
-                            append_text("[RTE] 💥 Runtime Error ({:.0f}ms)\n".format(elapsed))
+                            summary_lines.append("Test {}: [RTE] 💥 Runtime Error (Exit code: {}) ({:.0f}ms)".format(test_idx, proc.returncode, elapsed))
                             if err_str:
-                                append_text(err_str + "\n")
+                                summary_lines.append("  Stderr: " + err_str[:100].replace("\n", " "))
                         else:
                             if out_str == ans_data:
-                                append_text("[AC] 🎉 Accepted ({:.0f}ms)\n".format(elapsed))
+                                summary_lines.append("Test {}: [AC] 🎉 Accepted ({:.0f}ms)".format(test_idx, elapsed))
                             else:
-                                append_text("[WA] ❌ Wrong Answer ({:.0f}ms)\n".format(elapsed))
-                                append_text("Expected:\n{}\n\nGot:\n{}\n".format(ans_data, out_str))
+                                summary_lines.append("Test {}: [WA] ❌ Wrong Answer ({:.0f}ms)".format(test_idx, elapsed))
+                                summary_lines.append("  Expected: " + ans_data.replace("\n", " \\n ")[:80])
+                                summary_lines.append("  Got:      " + out_str.replace("\n", " \\n ")[:80])
                     except subprocess.TimeoutExpired:
                         proc.kill()
-                        append_text("[TLE] ⏳ Time Limit Exceeded (>2000ms)\n")
+                        summary_lines.append("Test {}: [TLE] ⏳ Time Limit Exceeded (>{}ms)".format(test_idx, time_limit_ms))
                     except Exception as e:
-                        append_text("Error running test: {}\n".format(e))
+                        summary_lines.append("Test {}: Error running test: {}".format(test_idx, e))
                         
-                    append_text("\n")
                     test_idx += 1
                     
                 if test_idx == 1:
                     append_text("No test cases found in .cpbuddy folder.\n")
                 else:
-                    append_text("Finished testing.\n")
+                    final_output = "\n".join(raw_outputs)
+                    if final_output:
+                        final_output += "\n\n"
+                    final_output += "=== RESULTS ===\n"
+                    final_output += "\n".join(summary_lines) + "\n"
+                    append_text(final_output)
                     
             except Exception as e:
-                append_text("CPBuddy Error: {}\\n".format(e))
+                append_text("CPBuddy Error: {}\n".format(e))
                 
         threading.Thread(target=run_tests).start()
 
@@ -507,6 +527,32 @@ class CpbuddyDeleteProblemCommand(sublime_plugin.TextCommand):
             sublime.error_message("CPBuddy Error deleting files: " + str(e))
 
 class CpbuddyEventListener(sublime_plugin.EventListener):
+    def on_close(self, view):
+        window = sublime.active_window()
+        if not window:
+            return
+            
+        filepath = view.file_name()
+        if not filepath or not filepath.endswith(".cpp"):
+            return
+            
+        workspace_root = window.folders()[0] if window.folders() else os.path.dirname(os.path.dirname(filepath))
+        platform = os.path.basename(os.path.dirname(filepath))
+        filename = os.path.basename(filepath)
+        safe_name = filename[:-4]
+        
+        cpbuddy_dir = os.path.join(workspace_root, ".cpbuddy", platform, safe_name)
+        
+        if os.path.exists(cpbuddy_dir):
+            for v in window.views():
+                v_file = v.file_name()
+                if v_file and v_file.startswith(cpbuddy_dir):
+                    v.set_scratch(True)
+                    v.close()
+                elif v.name() == ("CPBuddy Results: " + safe_name):
+                    v.set_scratch(True)
+                    v.close()
+
     def on_window_command(self, window, command_name, args):
         if command_name in ("delete_file", "side_bar_delete", "side_bar_trash"):
             files = []
@@ -610,18 +656,23 @@ class CpbuddyEventListener(sublime_plugin.EventListener):
         ans_file = os.path.join(cpbuddy_dir, "test1.ans")
         results_name = "CPBuddy Results: " + safe_name
         
+        is_cpp_open = False
+        for v in window.views():
+            if v.file_name() == cpp_file:
+                is_cpp_open = True
+                break
+                
+        if not is_cpp_open and group != 0:
+            view.set_scratch(True)
+            view.close()
+            return
+            
         active_view_0 = window.active_view_in_group(0)
         active_view_1 = window.active_view_in_group(1)
         active_view_2 = window.active_view_in_group(2)
         active_view_3 = window.active_view_in_group(3)
         
         needs_focus_return = False
-        
-        if group != 0 and os.path.exists(cpp_file):
-            if not active_view_0 or active_view_0.file_name() != cpp_file:
-                v_cpp = window.open_file(cpp_file)
-                window.set_view_index(v_cpp, 0, 0)
-                needs_focus_return = True
                 
         if group != 1 and os.path.exists(in_file):
             if not active_view_1 or active_view_1.file_name() != in_file:
