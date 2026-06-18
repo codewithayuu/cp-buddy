@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 RELEASE="$ROOT/release"
-VERSION="1.0.3"
+VERSION="1.0.5"
 
 usage() {
   echo "Usage: $0 [-v] [-c] [-f] [-a]"
