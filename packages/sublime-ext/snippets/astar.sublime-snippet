@@ -1,0 +1,42 @@
+<snippet>
+    <content><![CDATA[
+// A* Search Algorithm - O(E) with good heuristic, Worst O(V + E log V)
+// Computes shortest path from source to target using a heuristic function.
+// `heuristic(u, target)` estimates the cost from `u` to `target`.
+${1:long long} ${2:a_star}(int ${3:source}, int ${4:target}, int ${5:n}, const vector<vector<pair<${6:int}, ${1:long long}>>>& ${7:adj}, function<${1:long long}(${6:int}, ${6:int})> ${8:heuristic}) {
+    const ${1:long long} INF = 1e18;
+    vector<${1:long long}> dist(${5:n}, INF);
+    dist[${3:source}] = 0;
+    
+    // priority_queue stores {f-score, u}, where f-score = dist[u] + heuristic(u, target)
+    priority_queue<pair<${1:long long}, ${6:int}>, vector<pair<${1:long long}, ${6:int}>>, greater<pair<${1:long long}, ${6:int}>>> pq;
+    pq.push({${8:heuristic}(${3:source}, ${4:target}), ${3:source}});
+
+    while (!pq.empty()) {
+        auto [f, u] = pq.top();
+        pq.pop();
+
+        if (u == ${4:target}) return dist[u];
+        
+        // If the current f-score is greater than the best found so far + heuristic, skip.
+        if (f > dist[u] + ${8:heuristic}(u, ${4:target})) continue;
+
+        for (auto& edge : ${7:adj}[u]) {
+            ${6:int} v = edge.first;
+            ${1:long long} weight = edge.second;
+
+            if (dist[u] + weight < dist[v]) {
+                dist[v] = dist[u] + weight;
+                ${1:long long} next_f = dist[v] + ${8:heuristic}(v, ${4:target});
+                pq.push({next_f, v});
+            }
+        }
+    }
+    return -1; // Target unreachable
+}
+$0
+]]></content>
+    <tabTrigger>astar</tabTrigger>
+    <scope>source.c++</scope>
+    <description>A* Search - CPBuddy</description>
+</snippet>

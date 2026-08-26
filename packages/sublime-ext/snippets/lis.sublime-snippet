@@ -1,0 +1,18 @@
+<snippet>
+    <content><![CDATA[
+// Longest Increasing Subsequence - O(N log N)
+int ${1:lis}(const vector<${2:int}>& ${3:a}) {
+    vector<${2:int}> d;
+    for (${2:int} x : ${3:a}) {
+        auto it = ${4:lower_bound}(d.begin(), d.end(), x); // use upper_bound for non-decreasing
+        if (it == d.end()) d.push_back(x);
+        else *it = x;
+    }
+    return d.size();
+}
+$0
+]]></content>
+    <tabTrigger>lis</tabTrigger>
+    <scope>source.c++</scope>
+    <description>LIS in O(N log N) - CPBuddy</description>
+</snippet>

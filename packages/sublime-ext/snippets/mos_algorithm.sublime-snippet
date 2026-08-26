@@ -1,0 +1,46 @@
+<snippet>
+    <content><![CDATA[
+// Mo's Algorithm - O(N * sqrt(Q))
+const int BLOCK_SIZE = ${1:316}; // sqrt(N)
+
+struct ${2:Query} {
+    int l, r, id;
+    bool operator<(const ${2:Query}& other) const {
+        if (l / BLOCK_SIZE != other.l / BLOCK_SIZE)
+            return l < other.l;
+        return ((l / BLOCK_SIZE) & 1) ? (r < other.r) : (r > other.r);
+    }
+};
+
+void add(int idx) {
+    // Add logic here
+    ${3}
+}
+
+void remove(int idx) {
+    // Remove logic here
+    ${4}
+}
+
+vector<${5:int}> mos_algorithm(vector<${2:Query}>& queries) {
+    vector<${5:int}> answers(queries.size());
+    sort(queries.begin(), queries.end());
+    
+    int cur_l = 0, cur_r = -1;
+    for (const ${2:Query}& q : queries) {
+        while (cur_l > q.l) { cur_l--; add(cur_l); }
+        while (cur_r < q.r) { cur_r++; add(cur_r); }
+        while (cur_l < q.l) { remove(cur_l); cur_l++; }
+        while (cur_r > q.r) { remove(cur_r); cur_r--; }
+        
+        // Store answer for q.id
+        answers[q.id] = ${6};
+    }
+    return answers;
+}
+$0
+]]></content>
+    <tabTrigger>mos</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Mo's Algorithm (Standard) - CPBuddy</description>
+</snippet>

@@ -1,0 +1,16 @@
+<snippet>
+    <content><![CDATA[
+// Subset Sum with Bitset - O(N * SUM / 64)
+const int ${1:MAX_SUM} = ${2:100005};
+bitset<${1:MAX_SUM}> ${3:bs};
+${3:bs}[0] = 1;
+for (int i = 0; i < ${4:N}; ++i) {
+    ${3:bs} |= (${3:bs} << ${5:a}[i]);
+}
+// ${3:bs}[x] is 1 if subset sum x is possible
+$0
+]]></content>
+    <tabTrigger>subset_sum</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Subset Sum (Bitset optimization) - CPBuddy</description>
+</snippet>

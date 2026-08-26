@@ -1,0 +1,23 @@
+<snippet>
+    <content><![CDATA[
+// Stars and Bars Formula (Modulo MOD)
+// Number of ways to distribute n identical objects into k distinct bins
+// Time Complexity: O(1) assuming nCr is precomputed in O(N)
+${1:long long} ${2:starsAndBars}(${1:long long} n, ${1:long long} k) {
+    if (n < 0 || k < 0) return 0;
+    if (n == 0 && k == 0) return 1;
+    return ${3:nCr}(n + k - 1, k - 1);
+}
+
+// Number of ways to distribute n identical objects into k distinct bins 
+// with at least 1 object in each bin
+${1:long long} ${4:starsAndBarsPositive}(${1:long long} n, ${1:long long} k) {
+    if (n < k || k < 0) return 0;
+    return ${3:nCr}(n - 1, k - 1);
+}
+$0
+]]></content>
+    <tabTrigger>stars_and_bars</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Stars and Bars Formula - CPBuddy</description>
+</snippet>

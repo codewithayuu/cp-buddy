@@ -1,0 +1,17 @@
+<snippet>
+    <content><![CDATA[
+// 0/1 Knapsack - O(N * W)
+// dp[w] = max value with weight <= w
+vector<${1:long long}> ${2:dp}(${3:W} + 1, 0);
+for (int ${4:i} = 0; ${4:i} < ${5:N}; ++${4:i}) {
+    int weight = ${6:w}[${4:i}], value = ${7:v}[${4:i}];
+    for (int ${8:j} = ${3:W}; ${8:j} >= weight; --${8:j}) {
+        ${2:dp}[${8:j}] = max(${2:dp}[${8:j}], ${2:dp}[${8:j} - weight] + value);
+    }
+}
+$0
+]]></content>
+    <tabTrigger>knapsack01</tabTrigger>
+    <scope>source.c++</scope>
+    <description>0/1 Knapsack - CPBuddy</description>
+</snippet>

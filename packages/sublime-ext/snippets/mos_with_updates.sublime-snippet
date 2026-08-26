@@ -1,0 +1,62 @@
+<snippet>
+    <content><![CDATA[
+// Mo's Algorithm with Updates - O(N^(5/3))
+const int BLOCK_SIZE = ${1:2154}; // N^(2/3)
+
+struct ${2:Query} {
+    int l, r, t, id;
+    bool operator<(const ${2:Query}& other) const {
+        int b1 = l / BLOCK_SIZE, b2 = other.l / BLOCK_SIZE;
+        if (b1 != b2) return b1 < b2;
+        int r1 = r / BLOCK_SIZE, r2 = other.r / BLOCK_SIZE;
+        if (r1 != r2) return (b1 & 1) ? r1 < r2 : r1 > r2;
+        return ((b1 + r1) & 1) ? t < other.t : t > other.t;
+    }
+};
+
+struct ${3:Update} {
+    int idx, old_val, new_val;
+};
+
+void add(int idx) { ${4} }
+void remove(int idx) { ${5} }
+void apply_update(int idx, int val) { ${6} }
+
+vector<${7:int}> mos_updates(vector<${2:Query}>& queries, vector<${3:Update}>& updates) {
+    vector<${7:int}> answers(queries.size());
+    sort(queries.begin(), queries.end());
+    
+    int cur_l = 0, cur_r = -1, cur_t = 0;
+    for (const ${2:Query}& q : queries) {
+        while (cur_t < q.t) {
+            if (cur_l <= updates[cur_t].idx && updates[cur_t].idx <= cur_r) {
+                remove(updates[cur_t].idx); apply_update(updates[cur_t].idx, updates[cur_t].new_val); add(updates[cur_t].idx);
+            } else {
+                apply_update(updates[cur_t].idx, updates[cur_t].new_val);
+            }
+            cur_t++;
+        }
+        while (cur_t > q.t) {
+            cur_t--;
+            if (cur_l <= updates[cur_t].idx && updates[cur_t].idx <= cur_r) {
+                remove(updates[cur_t].idx); apply_update(updates[cur_t].idx, updates[cur_t].old_val); add(updates[cur_t].idx);
+            } else {
+                apply_update(updates[cur_t].idx, updates[cur_t].old_val);
+            }
+        }
+        
+        while (cur_l > q.l) { cur_l--; add(cur_l); }
+        while (cur_r < q.r) { cur_r++; add(cur_r); }
+        while (cur_l < q.l) { remove(cur_l); cur_l++; }
+        while (cur_r > q.r) { remove(cur_r); cur_r--; }
+        
+        answers[q.id] = ${8};
+    }
+    return answers;
+}
+$0
+]]></content>
+    <tabTrigger>mosupd</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Mo's Algorithm with Updates - CPBuddy</description>
+</snippet>

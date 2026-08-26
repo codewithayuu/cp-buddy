@@ -1,0 +1,45 @@
+<snippet>
+    <content><![CDATA[
+// Tarjan's Offline LCA - O((V + Q) * alpha(V))
+struct ${1:DSU} {
+    vector<int> parent;
+    ${1:DSU}(int n) {
+        parent.resize(n);
+        iota(parent.begin(), parent.end(), 0);
+    }
+    int find(int v) {
+        if (v == parent[v]) return v;
+        return parent[v] = find(parent[v]);
+    }
+    void unite(int a, int b) {
+        a = find(a);
+        b = find(b);
+        if (a != b) parent[b] = a;
+    }
+};
+
+void ${2:tarjan_lca}(int ${3:u}, const vector<vector<int>>& ${4:adj}, const vector<vector<pair<int, int>>>& ${5:queries}, 
+                vector<int>& ${6:ancestor}, vector<bool>& ${7:visited}, ${1:DSU}& ${8:dsu}, vector<int>& ${9:lca}) {
+    ${6:ancestor}[${3:u}] = ${3:u};
+    ${7:visited}[${3:u}] = true;
+    for (int v : ${4:adj}[${3:u}]) {
+        if (!${7:visited}[v]) {
+            ${2:tarjan_lca}(v, ${4:adj}, ${5:queries}, ${6:ancestor}, ${7:visited}, ${8:dsu}, ${9:lca});
+            ${8:dsu}.unite(${3:u}, v);
+            ${6:ancestor}[${8:dsu}.find(${3:u})] = ${3:u};
+        }
+    }
+    for (auto& q : ${5:queries}[${3:u}]) {
+        int v = q.first;
+        int idx = q.second;
+        if (${7:visited}[v]) {
+            ${9:lca}[idx] = ${6:ancestor}[${8:dsu}.find(v)];
+        }
+    }
+}
+$0
+]]></content>
+    <tabTrigger>tarjan_lca</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Tarjan's Offline LCA - CPBuddy</description>
+</snippet>

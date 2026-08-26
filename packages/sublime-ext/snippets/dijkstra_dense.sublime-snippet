@@ -1,0 +1,36 @@
+<snippet>
+    <content><![CDATA[
+// Dijkstra's Algorithm (Dense Graphs) - O(V^2 + E)
+// Better for dense graphs where E is close to V^2.
+void ${1:dijkstra_dense}(int ${2:source}, int ${3:n}, const vector<vector<pair<${4:int}, ${5:long long}>>>& ${6:adj}, vector<${5:long long}>& ${7:dist}) {
+    const ${5:long long} INF = ${8:1e18};
+    ${7:dist}.assign(${3:n}, INF);
+    vector<bool> visited(${3:n}, false);
+    ${7:dist}[${2:source}] = 0;
+
+    for (int i = 0; i < ${3:n}; ++i) {
+        int u = -1;
+        for (int j = 0; j < ${3:n}; ++j) {
+            if (!visited[j] && (u == -1 || ${7:dist}[j] < ${7:dist}[u])) {
+                u = j;
+            }
+        }
+
+        if (${7:dist}[u] == INF) break;
+
+        visited[u] = true;
+        for (auto& edge : ${6:adj}[u]) {
+            ${4:int} v = edge.first;
+            ${5:long long} weight = edge.second;
+            if (${7:dist}[u] + weight < ${7:dist}[v]) {
+                ${7:dist}[v] = ${7:dist}[u] + weight;
+            }
+        }
+    }
+}
+$0
+]]></content>
+    <tabTrigger>dijkstra_dense</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Dijkstra's Algorithm (Dense Graphs O(V^2)) - CPBuddy</description>
+</snippet>

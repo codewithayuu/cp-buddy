@@ -1,0 +1,43 @@
+<snippet>
+    <content><![CDATA[
+// SPFA (Shortest Path Faster Algorithm) - Average O(E), Worst O(V * E)
+// Computes single-source shortest path, handles negative weights. Returns false if negative cycle exists.
+bool ${1:spfa}(int ${2:source}, int ${3:n}, const vector<vector<pair<int, ${4:long long}>>>& ${5:adj}, vector<${4:long long}>& ${6:dist}) {
+    const ${4:long long} INF = ${7:1e18};
+    ${6:dist}.assign(${3:n}, INF);
+    vector<int> cnt(${3:n}, 0);
+    vector<bool> in_queue(${3:n}, false);
+    queue<int> q;
+
+    ${6:dist}[${2:source}] = 0;
+    q.push(${2:source});
+    in_queue[${2:source}] = true;
+
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+        in_queue[u] = false;
+
+        for (auto& edge : ${5:adj}[u]) {
+            int v = edge.first;
+            ${4:long long} weight = edge.second;
+
+            if (${6:dist}[u] + weight < ${6:dist}[v]) {
+                ${6:dist}[v] = ${6:dist}[u] + weight;
+                if (!in_queue[v]) {
+                    q.push(v);
+                    in_queue[v] = true;
+                    cnt[v]++;
+                    if (cnt[v] >= ${3:n}) return false; // Negative cycle detected
+                }
+            }
+        }
+    }
+    return true;
+}
+$0
+]]></content>
+    <tabTrigger>spfa</tabTrigger>
+    <scope>source.c++</scope>
+    <description>SPFA (Shortest Path Faster Algorithm) - CPBuddy</description>
+</snippet>

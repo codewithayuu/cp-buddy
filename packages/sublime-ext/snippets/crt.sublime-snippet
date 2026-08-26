@@ -1,0 +1,34 @@
+<snippet>
+    <content><![CDATA[
+// Chinese Remainder Theorem - O(N log(LCM))
+// Solves x = a[i] (mod m[i]) for all i. Returns {x, LCM(m_i)}
+${1:long long} ${2:extgcd}(${1:long long} a, ${1:long long} b, ${1:long long} &x, ${1:long long} &y) {
+    if (b == 0) { x = 1; y = 0; return a; }
+    ${1:long long} x1, y1;
+    ${1:long long} d = ${2:extgcd}(b, a % b, x1, y1);
+    x = y1; y = x1 - y1 * (a / b);
+    return d;
+}
+pair<${1:long long}, ${1:long long}> ${3:crt}(const vector<${1:long long}>& a, const vector<${1:long long}>& m) {
+    if (a.empty()) return {0, 1};
+    ${1:long long} a0 = a[0], m0 = m[0];
+    for (size_t i = 1; i < a.size(); i++) {
+        ${1:long long} a1 = a[i], m1 = m[i];
+        ${1:long long} p, q;
+        ${1:long long} g = ${2:extgcd}(m0, m1, p, q);
+        if ((a1 - a0) % g != 0) return {-1, -1}; // No solution
+        ${1:long long} lcm = (m0 / g) * m1;
+        ${1:long long} mod = m1 / g;
+        ${1:long long} mult = (a1 - a0) / g % mod * (p % mod) % mod;
+        a0 = (a0 + mult * m0) % lcm;
+        if (a0 < 0) a0 += lcm;
+        m0 = lcm;
+    }
+    return {a0, m0};
+}
+$0
+]]></content>
+    <tabTrigger>crt</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Chinese Remainder Theorem - CPBuddy</description>
+</snippet>

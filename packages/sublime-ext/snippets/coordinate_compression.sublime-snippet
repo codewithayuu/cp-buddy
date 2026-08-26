@@ -1,0 +1,17 @@
+<snippet>
+    <content><![CDATA[
+// Coordinate Compression - O(N log N)
+vector<${1:int}> ${2:vals} = ${3:a}; // Copy original array
+sort(${2:vals}.begin(), ${2:vals}.end());
+${2:vals}.erase(unique(${2:vals}.begin(), ${2:vals}.end()), ${2:vals}.end());
+
+for (int i = 0; i < ${3:a}.size(); ++i) {
+    ${3:a}[i] = lower_bound(${2:vals}.begin(), ${2:vals}.end(), ${3:a}[i]) - ${2:vals}.begin();
+}
+// ${2:vals}[x] returns the original value of compressed coordinate x
+$0
+]]></content>
+    <tabTrigger>compress</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Coordinate Compression - CPBuddy</description>
+</snippet>

@@ -1,0 +1,27 @@
+<snippet>
+    <content><![CDATA[
+// Inclusion-Exclusion Principle using Bitmask
+// Time Complexity: O(2^N * N)
+int ${1:n} = ${2:0}; // number of sets
+long long ${3:ans} = 0;
+for (int mask = 1; mask < (1 << ${1:n}); mask++) {
+    int bits = __builtin_popcount(mask);
+    long long current_intersection = ${4:0}; // Compute intersection of selected sets
+    
+    // Process bits if needed:
+    // for (int i = 0; i < ${1:n}; i++) {
+    //     if ((mask >> i) & 1) { ... }
+    // }
+
+    if (bits % 2 == 1) {
+        ${3:ans} += current_intersection; // Odd number of sets -> Add
+    } else {
+        ${3:ans} -= current_intersection; // Even number of sets -> Subtract
+    }
+}
+$0
+]]></content>
+    <tabTrigger>inclusion_exclusion</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Inclusion-Exclusion Principle (Bitmask) - CPBuddy</description>
+</snippet>

@@ -1,0 +1,284 @@
+/* AMOLED Jet Black & Blue Theme for LeetCode - Complete 100% Black Workspace */
+
+/* 1. All CSS Variables - Set every background layer, fill, and card to pure #000000 */
+*, :root, .dark, body.dark, [data-theme="dark"], html, body {
+    --bg-overlay-1: #000000 !important;
+    --bg-overlay-2: #000000 !important;
+    --bg-overlay-3: #000000 !important;
+    --bg-layer-0: #000000 !important;
+    --bg-layer-1: #000000 !important;
+    --bg-layer-2: #000000 !important;
+    --bg-layer-3: #000000 !important;
+    --bg-layer-4: #000000 !important;
+    --bg-fill-0: #000000 !important;
+    --bg-fill-1: #000000 !important;
+    --bg-fill-2: #000000 !important;
+    --bg-fill-3: #000000 !important;
+    --bg-fill-4: #000000 !important;
+    --layer-0: #000000 !important;
+    --layer-1: #000000 !important;
+    --layer-2: #000000 !important;
+    --layer-3: #000000 !important;
+    --layer-4: #000000 !important;
+    --fill-0: #000000 !important;
+    --fill-1: #000000 !important;
+    --fill-2: #000000 !important;
+    --fill-3: #000000 !important;
+    --fill-4: #000000 !important;
+    --dark-bg-layer-0: #000000 !important;
+    --dark-bg-layer-1: #000000 !important;
+    --dark-bg-layer-2: #000000 !important;
+    --dark-bg-layer-3: #000000 !important;
+    --dark-bg-layer-4: #000000 !important;
+    --dark-bg-fill-0: #000000 !important;
+    --dark-bg-fill-1: #000000 !important;
+    --dark-bg-fill-2: #000000 !important;
+    --dark-bg-fill-3: #000000 !important;
+    --dark-bg-fill-4: #000000 !important;
+    --dark-bg: #000000 !important;
+    --dark-layer-bg: #000000 !important;
+    --sd-bg: #000000 !important;
+    --sd-canvas: #000000 !important;
+    --paper-bg: #000000 !important;
+    --dark-paper-bg: #000000 !important;
+    --workspace-bg: #000000 !important;
+    --body-bg: #000000 !important;
+    --border-primary: #1e293b !important;
+    --border-secondary: #0f172a !important;
+    --link-color: #38bdf8 !important;
+    --link-hover-color: #7dd3fc !important;
+    --text-color: #f8fafc !important;
+}
+
+/* 2. Application & Root Body */
+html, body, #__next, main, [id="qd-content"], .allotment-module_splitView__L-yRc {
+    background-color: #000000 !important;
+    color: #f8fafc !important;
+}
+
+/* 3. FLEXLAYOUT ENGINE OVERRIDES (LeetCode's new window management system) */
+.flexlayout__layout,
+.flexlayout__tab,
+.flexlayout__tabset,
+.flexlayout__tabset_inner,
+.flexlayout__tab_button,
+.flexlayout__tab_button_trailing,
+.flexlayout__border,
+.flexlayout__border_inner,
+.flexlayout__border_button,
+.flexlayout__splitter,
+.flexlayout__tab_toolbar {
+    background-color: #000000 !important;
+    background: #000000 !important;
+    border-color: #1e293b !important;
+}
+.flexlayout__tab_button--selected {
+    background-color: #000000 !important;
+    border-bottom: 2px solid #00e5ff !important;
+    color: #00e5ff !important;
+}
+
+/* 4. Structural Override for ALL Workspace Panes (Question Area, Code Editor, Testcase Area) */
+[class*="allotment"] > div,
+[class*="allotment"] > div > div,
+[class*="allotment"] > div > div > div,
+[class*="splitView"] > div,
+[class*="splitView"] > div > div,
+[class*="splitView"] > div > div > div {
+    background-color: #000000 !important;
+    border-color: #1e293b !important;
+}
+
+/* 5. Comprehensive Container Background Overrides for EVERY Gray & Neutral Tailwind Class */
+div[class*="layer-"],
+div[class*="fill-"],
+div[class*="overlay-"],
+div[class*="paper"],
+div[class*="neutral-"],
+div[class*="zinc-"],
+div[class*="gray-"],
+div[class*="slate-"],
+div[class*="[#101010]"], div[class*="[#121212]"], div[class*="[#141414]"], div[class*="[#161616]"],
+div[class*="[#181818]"], div[class*="[#1a1a1a]"], div[class*="[#1b1b1b]"], div[class*="[#1c1c1c]"],
+div[class*="[#1d1d1d]"], div[class*="[#1e1e1e]"], div[class*="[#1f1f1f]"], div[class*="[#202020]"],
+div[class*="[#222222]"], div[class*="[#242424]"], div[class*="[#262626]"], div[class*="[#272727]"],
+div[class*="[#282828]"], div[class*="[#2a2a2a]"], div[class*="[#2b2b2b]"], div[class*="[#2c2c2c]"],
+div[class*="[#2d2d2d]"], div[class*="[#2e2e2e]"], div[class*="[#303030]"], div[class*="[#323232]"],
+div[class*="[#333333]"], div[class*="[#343434]"], div[class*="[#363636]"], div[class*="[#383838]"],
+div[class*="[#3a3a3a]"], div[class*="[#404040]"],
+nav, header, aside, section, article, footer {
+    background-color: #000000 !important;
+    border-color: #1e293b !important;
+}
+
+/* Hard override for PRE and CODE elements inside Problem Description */
+pre, code, .HTMLContent_html__0OZLp pre, .HTMLContent_html__0OZLp code {
+    background-color: #050a12 !important;
+    border: 1px solid #1e293b !important;
+    color: #38bdf8 !important;
+}
+
+/* 6. Modals, Dialogs & Popovers */
+div[role="dialog"], div[class*="modal"], div[class*="popover"], div[class*="tooltip"] {
+    background-color: #000000 !important;
+    border: 1px solid #38bdf8 !important;
+    box-shadow: 0 4px 25px rgba(0, 229, 255, 0.15) !important;
+}
+
+/* 7. Code Editor (Monaco / CodeMirror) */
+.monaco-editor,
+.monaco-editor .margin,
+.monaco-editor-background,
+.monaco-editor .inputarea.ime-input,
+.react-monaco-editor-container,
+div[class*="monaco-editor"]:not([class*="selection"]):not([class*="findMatch"]):not([class*="suggest-widget"]):not([class*="hover-widget"]):not([class*="parameter-hints"]),
+.cm-editor,
+.cm-scroller,
+.cm-gutters {
+    background-color: #000000 !important;
+    background: #000000 !important;
+}
+.monaco-editor .margin, .cm-gutters {
+    border-right: 1px solid #1e293b !important;
+}
+.monaco-editor .view-lines {
+    background-color: transparent !important;
+}
+
+/* 7b. Text Selection Highlights (Monaco, CodeMirror, and Native) */
+::selection {
+    background-color: rgba(0, 229, 255, 0.3) !important;
+}
+.monaco-editor .selected-text {
+    background-color: rgba(0, 229, 255, 0.35) !important;
+}
+.monaco-editor .selectionHighlight {
+    background-color: rgba(0, 229, 255, 0.2) !important;
+}
+.monaco-editor .findMatch {
+    background-color: rgba(255, 165, 0, 0.4) !important;
+}
+.monaco-editor .currentFindMatch {
+    background-color: rgba(255, 165, 0, 0.7) !important;
+}
+.cm-selectionBackground, .cm-focused .cm-selectionBackground {
+    background-color: rgba(0, 229, 255, 0.3) !important;
+}
+
+/* 8. Problem Tables and Lists */
+table, .table-responsive, div[role="table"] {
+    background-color: #000000 !important;
+    border-color: #1e293b !important;
+}
+tr, div[role="row"] {
+    background-color: #000000 !important;
+    border-bottom: 1px solid #1e293b !important;
+}
+tr:nth-child(even), div[role="row"]:nth-child(even) {
+    background-color: #02060d !important;
+}
+tr:hover, div[role="row"]:hover {
+    background-color: #081224 !important;
+}
+
+/* 9. Clean Text Link & Active Tab Accents (Zero button or icon breakage) */
+a:not([class*="btn"]):not([class*="Button"]):not([role="button"]),
+a:not([class*="btn"]):not([class*="Button"]):not([role="button"]):link,
+a:not([class*="btn"]):not([class*="Button"]):not([role="button"]):visited {
+    color: #38bdf8 !important;
+    transition: color 0.2s ease !important;
+}
+a:not([class*="btn"]):not([class*="Button"]):not([role="button"]):hover {
+    color: #00ffff !important;
+    text-shadow: 0 0 8px rgba(0, 255, 255, 0.4) !important;
+}
+
+/* Active Tabs in Problem Workspace Nav */
+div[role="tablist"] [aria-selected="true"],
+div[role="tablist"] [data-state="active"],
+nav [class*="active"],
+nav [class*="selected"],
+ul [class*="active"] {
+    color: #00e5ff !important;
+    border-bottom: 2px solid #00e5ff !important;
+}
+
+/* 10. Heatmap & Submission Calendar Grid Override to Cyber/AMOLED Blue Gradient */
+rect[fill*="#2d333b"], rect[fill*="#161b22"], rect[fill*="#ebedf0"], rect[data-level="0"], rect[fill*="#282828"], rect[fill*="#1a1a1a"] {
+    fill: #060d18 !important;
+}
+rect[data-level="1"], rect[fill*="#0e4429"], rect[fill*="#39d353"], rect[fill*="#006d32"], rect[fill*="#004d20"] {
+    fill: #0284c7 !important;
+}
+rect[data-level="2"], rect[fill*="#26a641"], rect[fill*="#00802b"] {
+    fill: #00a8ff !important;
+}
+rect[data-level="3"], rect[fill*="#00b33c"] {
+    fill: #00d8ff !important;
+}
+rect[data-level="4"], rect[fill*="#00e64d"] {
+    fill: #00ffff !important;
+    filter: drop-shadow(0 0 3px rgba(0, 255, 255, 0.5)) !important;
+}
+
+/* 11. Scrollbars */
+::-webkit-scrollbar {
+    width: 8px !important;
+    height: 8px !important;
+}
+::-webkit-scrollbar-track {
+    background: #000000 !important;
+}
+::-webkit-scrollbar-thumb {
+    background: #1e293b !important;
+    border-radius: 4px !important;
+    border: 1px solid #000000 !important;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #0284c7 !important;
+    box-shadow: 0 0 8px #00e5ff !important;
+}
+
+/* 12. Ad & Premium Banner Blocker */
+.group\/ads,
+.group\\/ads,
+[class*="group/ads"],
+#ad-placeholder,
+[id*="ad-slot"],
+[class*="ad-banner"],
+[class*="ad-container"],
+/* Hide the specific LeetCode premium upgrade banner carousel images */
+img[src*="assets.leetcode.com/users/images/"][src*=".png"],
+/* Hide ALL premium links and buttons (like the navbar "Premium" button) */
+a[href*="/premium"],
+a[href*="/premium"]:has(img),
+div:has(> a[href*="/premium"] img),
+/* Hide "Advertisement" pseudo-elements */
+div:has(> div > div::before)[class*="group/ads"] {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    position: absolute !important;
+    width: 0 !important;
+    height: 0 !important;
+    z-index: -9999 !important;
+}
+
+/* 13. Monaco Editor Autocomplete / IntelliSense Widgets */
+.monaco-editor .suggest-widget,
+.monaco-editor .editor-widget,
+.monaco-editor .hover-widget,
+.monaco-editor .parameter-hints-widget {
+    background-color: #050a12 !important;
+    border: 1px solid #1e293b !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8) !important;
+    color: #f8fafc !important;
+}
+.monaco-editor .suggest-widget .monaco-list-row.focused,
+.monaco-editor .suggest-widget .monaco-list-row:hover {
+    background-color: rgba(0, 229, 255, 0.2) !important;
+}
+.monaco-editor .suggest-widget .monaco-highlighted-label {
+    color: #38bdf8 !important;
+    font-weight: bold !important;
+}

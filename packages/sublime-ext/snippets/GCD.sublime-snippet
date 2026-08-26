@@ -1,0 +1,15 @@
+<snippet>
+    <content><![CDATA[
+long long gcd(long long a, long long b) {
+    while (b) {
+        a %= b;
+        swap(a, b);
+    }
+    return a;
+}
+$0
+]]></content>
+    <tabTrigger>gcd</tabTrigger>
+    <scope>source.c++</scope>
+    <description>GCD (Greatest Common Divisor) - CPBuddy</description>
+</snippet>

@@ -1,0 +1,31 @@
+<snippet>
+    <content><![CDATA[
+// Rabin-Karp String Hashing
+// Time Complexity: Precomputation O(N), Substring Hash O(1)
+struct ${2:StringHash} {
+    ${1:long long} MOD, BASE;
+    vector<${1:long long}> prefix, power;
+
+    ${2:StringHash}(const string& s, ${1:long long} mod = 1e9 + 9, ${1:long long} base = 31) 
+        : MOD(mod), BASE(base) {
+        int n = s.length();
+        prefix.assign(n + 1, 0);
+        power.assign(n + 1, 1);
+        for (int i = 0; i < n; i++) {
+            prefix[i + 1] = (prefix[i] * BASE + (s[i] - 'a' + 1)) % MOD;
+            power[i + 1] = (power[i] * BASE) % MOD;
+        }
+    }
+
+    // Get hash of substring [l, r] (0-indexed)
+    ${1:long long} get_hash(int l, int r) {
+        ${1:long long} h = (prefix[r + 1] - prefix[l] * power[r - l + 1]) % MOD;
+        return h < 0 ? h + MOD : h;
+    }
+};
+$0
+]]></content>
+    <tabTrigger>rabin_karp</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Rabin-Karp String Hashing - CPBuddy</description>
+</snippet>

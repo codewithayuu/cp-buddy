@@ -1,0 +1,44 @@
+<snippet>
+    <content><![CDATA[
+struct ${1:DSU} {
+    int n, components;
+    vector<int> parent, sz;
+    
+    ${1:DSU}(int n) : n(n), components(n) {
+        parent.resize(n);
+        iota(parent.begin(), parent.end(), 0);
+        sz.assign(n, 1);
+    }
+    
+    // O(alpha(N)) - Find root of x with path compression
+    int find(int x) {
+        return (x == parent[x] ? x : parent[x] = find(parent[x]));
+    }
+    
+    // O(alpha(N)) - Union by size
+    bool unite(int x, int y) {
+        x = find(x);
+        y = find(y);
+        if (x == y) return false;
+        
+        if (sz[x] < sz[y]) swap(x, y);
+        parent[y] = x;
+        sz[x] += sz[y];
+        components--;
+        return true;
+    }
+    
+    bool same(int x, int y) {
+        return find(x) == find(y);
+    }
+    
+    int size(int x) {
+        return sz[find(x)];
+    }
+};
+$0
+]]></content>
+    <tabTrigger>dsu</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Disjoint Set Union (DSU) - CPBuddy</description>
+</snippet>

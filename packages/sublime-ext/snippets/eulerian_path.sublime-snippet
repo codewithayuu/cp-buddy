@@ -1,0 +1,53 @@
+<snippet>
+    <content><![CDATA[
+// Eulerian Path (Hierholzer's Algorithm) - O(V + E)
+// Finds an Eulerian path in a directed graph. Modify degrees check for undirected.
+vector<${1:int}> ${2:eulerian_path}(int ${3:n}, vector<vector<${1:int}>> ${4:adj}, vector<${1:int}>& ${5:in_degree}, vector<${1:int}>& ${6:out_degree}) {
+    int start_node = -1, end_node = -1;
+    for (int i = 0; i < ${3:n}; ++i) {
+        if (${6:out_degree}[i] - ${5:in_degree}[i] == 1) {
+            if (start_node != -1) return {}; // No Eulerian Path
+            start_node = i;
+        } else if (${5:in_degree}[i] - ${6:out_degree}[i] == 1) {
+            if (end_node != -1) return {}; // No Eulerian Path
+            end_node = i;
+        } else if (${5:in_degree}[i] != ${6:out_degree}[i]) {
+            return {}; // No Eulerian Path
+        }
+    }
+    if (start_node == -1) {
+        // If all in-degrees == out-degrees, Eulerian Circuit exists.
+        // Choose any node with non-zero out-degree as start.
+        for (int i = 0; i < ${3:n}; ++i) {
+            if (${6:out_degree}[i] > 0) {
+                start_node = i;
+                break;
+            }
+        }
+        if (start_node == -1) return {}; // Empty graph
+    }
+
+    vector<${1:int}> path;
+    stack<${1:int}> st;
+    st.push(start_node);
+
+    while (!st.empty()) {
+        int u = st.top();
+        if (${4:adj}[u].empty()) {
+            path.push_back(u);
+            st.pop();
+        } else {
+            int v = ${4:adj}[u].back();
+            ${4:adj}[u].pop_back();
+            st.push(v);
+        }
+    }
+    reverse(path.begin(), path.end());
+    return path;
+}
+$0
+]]></content>
+    <tabTrigger>eulerian_path</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Eulerian Path - CPBuddy</description>
+</snippet>

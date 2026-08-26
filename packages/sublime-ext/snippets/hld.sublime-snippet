@@ -1,0 +1,88 @@
+<snippet>
+    <content><![CDATA[
+struct ${1:HLD} {
+    int n, timer;
+    vector<int> parent, depth, head, pos, sz, heavy;
+    vector<vector<int>> adj;
+    
+    // Optional Segment Tree for queries on paths
+    // SegmentTree<${2:int}> seg;
+    
+    ${1:HLD}(int n) : n(n), timer(0) {
+        adj.resize(n + 1);
+        parent.resize(n + 1);
+        depth.resize(n + 1);
+        head.resize(n + 1);
+        pos.resize(n + 1);
+        sz.resize(n + 1);
+        heavy.assign(n + 1, -1);
+    }
+    
+    void add_edge(int u, int v) {
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+    
+    int dfs_sz(int v, int p) {
+        sz[v] = 1;
+        parent[v] = p;
+        depth[v] = depth[p] + 1;
+        int max_sub = 0;
+        for (int u : adj[v]) {
+            if (u != p) {
+                int sub_sz = dfs_sz(u, v);
+                sz[v] += sub_sz;
+                if (sub_sz > max_sub) {
+                    max_sub = sub_sz;
+                    heavy[v] = u;
+                }
+            }
+        }
+        return sz[v];
+    }
+    
+    void dfs_hld(int v, int p, int h) {
+        head[v] = h;
+        pos[v] = ++timer; // 1-based indexing for Segment Tree
+        if (heavy[v] != -1) dfs_hld(heavy[v], v, h);
+        for (int u : adj[v]) {
+            if (u != p && u != heavy[v]) {
+                dfs_hld(u, v, u);
+            }
+        }
+    }
+    
+    void build(int root = 1) {
+        dfs_sz(root, 0);
+        dfs_hld(root, 0, root);
+        // seg = SegmentTree<${2:int}>(n + 1); // Initialize Segment Tree
+    }
+    
+    // O(log^2 N) - Query on path from u to v
+    ${2:int} query_path(int u, int v) {
+        ${2:int} res = ${3:0}; // Identity value
+        for (; head[u] != head[v]; v = parent[head[v]]) {
+            if (depth[head[u]] > depth[head[v]]) swap(u, v);
+            // res = ${4:merge}(res, seg.query(pos[head[v]], pos[v])); // Segment Tree query
+        }
+        if (depth[u] > depth[v]) swap(u, v);
+        // res = ${4:merge}(res, seg.query(pos[u], pos[v])); // Segment Tree query (pos[u] to pos[v])
+        return res;
+    }
+    
+    // O(log^2 N) - Update on path from u to v
+    void update_path(int u, int v, ${2:int} val) {
+        for (; head[u] != head[v]; v = parent[head[v]]) {
+            if (depth[head[u]] > depth[head[v]]) swap(u, v);
+            // seg.update(pos[head[v]], pos[v], val); // Segment Tree update
+        }
+        if (depth[u] > depth[v]) swap(u, v);
+        // seg.update(pos[u], pos[v], val); // Segment Tree update
+    }
+};
+$0
+]]></content>
+    <tabTrigger>hld</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Heavy-Light Decomposition (HLD) - CPBuddy</description>
+</snippet>

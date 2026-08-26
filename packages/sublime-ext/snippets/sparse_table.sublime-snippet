@@ -1,0 +1,41 @@
+<snippet>
+    <content><![CDATA[
+template<typename ${1:T}>
+struct ${2:SparseTable} {
+    int n, max_log;
+    vector<vector<${1:T}>> st;
+    vector<int> lg;
+    
+    ${2:SparseTable}(const vector<${1:T}>& a) {
+        n = a.size();
+        lg.assign(n + 1, 0);
+        for (int i = 2; i <= n; i++) lg[i] = lg[i / 2] + 1;
+        
+        max_log = lg[n] + 1;
+        st.assign(n, vector<${1:T}>(max_log));
+        
+        for (int i = 0; i < n; i++) st[i][0] = a[i];
+        
+        for (int j = 1; j < max_log; j++) {
+            for (int i = 0; i + (1 << j) <= n; i++) {
+                st[i][j] = merge(st[i][j - 1], st[i + (1 << (j - 1))][j - 1]);
+            }
+        }
+    }
+    
+    ${1:T} merge(${1:T} a, ${1:T} b) {
+        return ${3:min}(a, b); // ${4:Change to max/min/gcd}
+    }
+    
+    // O(1) query for idempotent operations (min, max, gcd)
+    ${1:T} query(int l, int r) {
+        int j = lg[r - l + 1];
+        return merge(st[l][j], st[r - (1 << j) + 1][j]);
+    }
+};
+$0
+]]></content>
+    <tabTrigger>sparsetable</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Sparse Table (RMQ) - CPBuddy</description>
+</snippet>

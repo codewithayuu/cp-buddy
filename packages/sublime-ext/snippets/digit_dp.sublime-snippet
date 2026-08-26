@@ -1,0 +1,37 @@
+<snippet>
+    <content><![CDATA[
+// Digit DP Template
+${1:long long} dp[${2:20}][2][2]; // [pos][tight][other_state]
+
+${1:long long} ${3:solve}(const string& s, int pos, bool tight, bool state) {
+    if (pos == s.length()) {
+        return state; // base case
+    }
+    if (dp[pos][tight][state] != -1) {
+        return dp[pos][tight][state];
+    }
+    
+    int limit = tight ? (s[pos] - '0') : 9;
+    ${1:long long} res = 0;
+    
+    for (int d = 0; d <= limit; d++) {
+        bool ntight = tight && (d == limit);
+        bool nstate = state; // transition state based on 'd'
+        res += ${3:solve}(s, pos + 1, ntight, nstate);
+    }
+    
+    return dp[pos][tight][state] = res;
+}
+
+${1:long long} ${4:calc}(${1:long long} n) {
+    if (n < 0) return 0;
+    string s = to_string(n);
+    memset(dp, -1, sizeof(dp));
+    return ${3:solve}(s, 0, true, 0);
+}
+$0
+]]></content>
+    <tabTrigger>digitdp</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Digit DP Template - CPBuddy</description>
+</snippet>

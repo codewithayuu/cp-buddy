@@ -1,0 +1,23 @@
+<snippet>
+    <content><![CDATA[
+// Modular Inverse - O(log m)
+// Requires a and m to be coprime. If m is prime, can use Fermat's Little Theorem.
+${1:long long} extgcd(${1:long long} a, ${1:long long} b, ${1:long long} &x, ${1:long long} &y) {
+    if (b == 0) { x = 1; y = 0; return a; }
+    ${1:long long} x1, y1;
+    ${1:long long} d = extgcd(b, a % b, x1, y1);
+    x = y1; y = x1 - y1 * (a / b);
+    return d;
+}
+${1:long long} modinv(${1:long long} a, ${1:long long} m) {
+    ${1:long long} x, y;
+    ${1:long long} g = extgcd(a, m, x, y);
+    if (g != 1) return -1; // No inverse
+    return (x % m + m) % m;
+}
+$0
+]]></content>
+    <tabTrigger>modinv</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Modular Inverse - CPBuddy</description>
+</snippet>

@@ -1,0 +1,69 @@
+*cpbuddy.txt*  Competitive Programming TUI & Testcase Runner for Neovim
+
+==============================================================================
+CONTENTS                                                     *cpbuddy-contents*
+
+    1. Overview ............................................. |cpbuddy-overview|
+    2. Quick Start .......................................... |cpbuddy-quickstart|
+    3. Commands ............................................. |cpbuddy-commands|
+    4. Keybindings .......................................... |cpbuddy-keymaps|
+    5. Layout Modes ......................................... |cpbuddy-layout|
+    6. Stress Testing ....................................... |cpbuddy-stress|
+    7. Snippet Library ...................................... |cpbuddy-snippets|
+    8. Configuration ........................................ |cpbuddy-config|
+
+==============================================================================
+1. OVERVIEW                                                 *cpbuddy-overview*
+
+CPBuddy for Neovim is a high-performance, specialized competitive programming
+environment. It receives problems instantly from Competitive Companion,
+provides a Sublime Text-style 4-split testcase runner, an interactive floating
+TUI dashboard, automated stress testing, one-click judge submission, and a rich
+CP algorithm library.
+
+==============================================================================
+2. QUICK START                                            *cpbuddy-quickstart*
+
+Using Lazy.nvim: >lua
+    {
+        "codewithayuu/cp-buddy",
+        opts = {
+            default_language = "cpp",
+        }
+    }
+<
+Standalone TUI Launcher: >bash
+    ./packages/neovim-ext/bin/cpbuddy-tui
+<
+
+==============================================================================
+3. COMMANDS                                                 *cpbuddy-commands*
+
+:CPBuddyRun                 Run all testcases for the current problem.
+:CPBuddyLayout              Toggle Sublime Text 4-split layout.
+:CPBuddyDashboard           Open interactive floating TUI dashboard.
+:CPBuddySubmit              Submit code to judge via browser extension.
+:CPBuddyAddTest             Create a new custom testcase.
+:CPBuddyDeleteProblem       Delete current problem and clean testcases.
+:CPBuddyStressTest [N]      Run automated stress test for N iterations.
+:CPBuddySnippets            Open CP algorithm and template picker.
+:CPBuddyContest             Open contest problem switcher.
+:CPBuddyContestTimer [min]  Start or toggle contest countdown timer.
+:CPBuddySwitchTest <idx>    Switch visible testcase in split view.
+:CPBuddyRouterStatus        Display router background daemon status.
+
+==============================================================================
+4. KEYBINDINGS                                               *cpbuddy-keymaps*
+
+<F5> or <leader>cr          Run testcases
+<leader>ct                  Open TUI dashboard
+<leader>cl                  Toggle Sublime 4-split layout
+<leader>ca                  Add custom testcase
+<leader>cd                  Delete current problem
+<leader>cs                  Submit to judge
+<leader>cst                 Stress test solution
+<leader>cp                  Algorithm snippet library
+<leader>cc                  Contest problem switcher
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:

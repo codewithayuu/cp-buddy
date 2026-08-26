@@ -1,0 +1,44 @@
+<snippet>
+    <content><![CDATA[
+// Pollard's Rho Integer Factorization - O(n^{1/4})
+// Depends on Miller-Rabin for primality testing
+using ${1:u64} = ${2:uint64_t};
+using ${3:u128} = ${4:__uint128_t};
+
+${1:u64} pollard_rho(${1:u64} n) {
+    if (n % 2 == 0) return 2;
+    if (miller_rabin(n)) return n;
+    ${1:u64} x = 2, y = 2, d = 1, c = 1;
+    auto f = [&](${1:u64} x, ${1:u64} n, ${1:u64} c) {
+        return ((${3:u128})x * x + c) % n;
+    };
+    while (d == 1) {
+        x = f(x, n, c);
+        y = f(f(y, n, c), n, c);
+        d = std::gcd(x > y ? x - y : y - x, n);
+        if (d == n) {
+            x = rand() % (n - 2) + 2;
+            y = x;
+            c = rand() % (n - 1) + 1;
+            d = 1;
+        }
+    }
+    return d;
+}
+
+void factorize(${1:u64} n, vector<${1:u64}>& factors) {
+    if (n == 1) return;
+    if (miller_rabin(n)) {
+        factors.push_back(n);
+        return;
+    }
+    ${1:u64} divisor = pollard_rho(n);
+    factorize(divisor, factors);
+    factorize(n / divisor, factors);
+}
+$0
+]]></content>
+    <tabTrigger>pollard_rho</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Pollard's Rho Factorization - CPBuddy</description>
+</snippet>

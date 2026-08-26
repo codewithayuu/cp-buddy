@@ -1,0 +1,66 @@
+<snippet>
+    <content><![CDATA[
+struct ${1:TrieNode} {
+    ${1:TrieNode}* children[2];
+    int count;
+    ${1:TrieNode}() {
+        children[0] = children[1] = nullptr;
+        count = 0;
+    }
+};
+
+struct ${2:BitwiseTrie} {
+    ${1:TrieNode}* root;
+    const int ${3:MAX_BITS} = ${4:31}; // Change max bits based on constraints
+    
+    ${2:BitwiseTrie}() {
+        root = new ${1:TrieNode}();
+    }
+    
+    // O(MAX_BITS) - Insert a number
+    void insert(int n) {
+        ${1:TrieNode}* curr = root;
+        for (int i = ${3:MAX_BITS}; i >= 0; i--) {
+            int bit = (n >> i) & 1;
+            if (!curr->children[bit]) {
+                curr->children[bit] = new ${1:TrieNode}();
+            }
+            curr = curr->children[bit];
+            curr->count++;
+        }
+    }
+    
+    // O(MAX_BITS) - Remove a number (must exist)
+    void remove(int n) {
+        ${1:TrieNode}* curr = root;
+        for (int i = ${3:MAX_BITS}; i >= 0; i--) {
+            int bit = (n >> i) & 1;
+            curr = curr->children[bit];
+            curr->count--;
+        }
+    }
+    
+    // O(MAX_BITS) - Find maximum XOR with n
+    int max_xor(int n) {
+        ${1:TrieNode}* curr = root;
+        int max_val = 0;
+        for (int i = ${3:MAX_BITS}; i >= 0; i--) {
+            int bit = (n >> i) & 1;
+            if (curr->children[1 ^ bit] && curr->children[1 ^ bit]->count > 0) {
+                max_val |= (1 << i);
+                curr = curr->children[1 ^ bit];
+            } else if (curr->children[bit] && curr->children[bit]->count > 0) {
+                curr = curr->children[bit];
+            } else {
+                break;
+            }
+        }
+        return max_val;
+    }
+};
+$0
+]]></content>
+    <tabTrigger>bitwisetrie</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Bitwise Trie - CPBuddy</description>
+</snippet>

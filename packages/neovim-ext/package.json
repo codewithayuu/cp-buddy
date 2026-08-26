@@ -1,0 +1,20 @@
+{
+  "name": "@cpbuddy/neovim-ext",
+  "version": "1.0.5",
+  "description": "The Ultimate Competitive Programming TUI and Neovim Plugin for CPBuddy",
+  "main": "plugin/cpbuddy.lua",
+  "bin": {
+    "cpbuddy-tui": "bin/cpbuddy-tui"
+  },
+  "keywords": [
+    "neovim",
+    "neovim-plugin",
+    "competitive-programming",
+    "codeforces",
+    "tui",
+    "testcase-runner",
+    "cph"
+  ],
+  "author": "Ayush Jha",
+  "license": "AGPL-3.0-only"
+}

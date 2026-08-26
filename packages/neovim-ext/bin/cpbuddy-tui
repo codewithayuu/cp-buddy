@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# CPBuddy TUI Launcher
+# Launches the standalone CPBuddy Competitive Programming TUI environment
+
+# Resolve the real path of this script even when invoked via symlink
+REAL_SCRIPT="$(readlink -f "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(cd "$(dirname "$REAL_SCRIPT")" && pwd)"
+CONFIG_PATH="$SCRIPT_DIR/../standalone/init.lua"
+
+if ! command -v nvim &>/dev/null; then
+    echo "Error: Neovim (nvim) is not installed or not in PATH."
+    echo "Please install Neovim v0.9+ to use CPBuddy TUI."
+    exit 1
+fi
+
+exec nvim -u "$CONFIG_PATH" "$@"

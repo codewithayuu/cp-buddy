@@ -1,0 +1,21 @@
+<snippet>
+    <content><![CDATA[
+// Smallest Prime Factor (SPF) via Sieve - O(N log log N) preprocessing
+const int ${1:N} = ${2:MAXN};
+vector<int> ${3:spf}(${1:N} + 1);
+void ${4:sieve}() {
+    for (int i = 1; i <= ${1:N}; i++) ${3:spf}[i] = i;
+    for (int i = 2; i * i <= ${1:N}; i++) {
+        if (${3:spf}[i] == i) {
+            for (int j = i * i; j <= ${1:N}; j += i)
+                if (${3:spf}[j] == j)
+                    ${3:spf}[j] = i;
+        }
+    }
+}
+$0
+]]></content>
+    <tabTrigger>spf</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Smallest Prime Factor - CPBuddy</description>
+</snippet>

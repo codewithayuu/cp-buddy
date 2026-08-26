@@ -1,0 +1,21 @@
+<snippet>
+    <content><![CDATA[
+// Linear Sieve - O(N)
+const int ${1:N} = ${2:MAXN};
+vector<int> ${3:pr};
+vector<int> ${4:lp}(${1:N} + 1); // smallest prime factor
+for (int ${5:i} = 2; ${5:i} <= ${1:N}; ++${5:i}) {
+    if (${4:lp}[${5:i}] == 0) {
+        ${4:lp}[${5:i}] = ${5:i};
+        ${3:pr}.push_back(${5:i});
+    }
+    for (int ${6:j} = 0; ${6:j} < (int)${3:pr}.size() && ${3:pr}[${6:j}] <= ${4:lp}[${5:i}] && ${5:i} * ${3:pr}[${6:j}] <= ${1:N}; ++${6:j}) {
+        ${4:lp}[${5:i} * ${3:pr}[${6:j}]] = ${3:pr}[${6:j}];
+    }
+}
+$0
+]]></content>
+    <tabTrigger>linear_sieve</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Linear Sieve - CPBuddy</description>
+</snippet>

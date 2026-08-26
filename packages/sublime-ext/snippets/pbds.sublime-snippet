@@ -1,0 +1,21 @@
+<snippet>
+    <content><![CDATA[
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace __gnu_pbds;
+
+// Change to less_equal<T> for multiset
+template<typename ${1:T}>
+using ${2:ordered_set} = tree<${1:T}, ${3:null_type}, ${4:less<${1:T}>}, rb_tree_tag, tree_order_statistics_node_update>;
+
+// Usage:
+// ordered_set<int> os;
+// os.insert(x);
+// os.find_by_order(k);    // Returns iterator to kth smallest element (0-indexed)
+// os.order_of_key(x);     // Returns number of elements strictly smaller than x
+$0
+]]></content>
+    <tabTrigger>pbds</tabTrigger>
+    <scope>source.c++</scope>
+    <description>PBDS Ordered Set - CPBuddy</description>
+</snippet>

@@ -1,0 +1,60 @@
+<snippet>
+    <content><![CDATA[
+struct ${1:DSURollback} {
+    int n, components;
+    vector<int> parent, sz;
+    vector<pair<int, int>> history; // stores {node, sz}
+    
+    ${1:DSURollback}(int n) : n(n), components(n) {
+        parent.resize(n);
+        iota(parent.begin(), parent.end(), 0);
+        sz.assign(n, 1);
+    }
+    
+    // O(log N) - Find root of x without path compression
+    int find(int x) {
+        while (x != parent[x]) x = parent[x];
+        return x;
+    }
+    
+    // O(log N) - Union by size
+    bool unite(int x, int y) {
+        x = find(x);
+        y = find(y);
+        if (x == y) return false;
+        
+        if (sz[x] < sz[y]) swap(x, y);
+        history.push_back({y, parent[y]});
+        history.push_back({x, sz[x]});
+        
+        parent[y] = x;
+        sz[x] += sz[y];
+        components--;
+        return true;
+    }
+    
+    int get_state() {
+        return history.size();
+    }
+    
+    // O(1) per rollback step
+    void rollback(int state) {
+        while (history.size() > state) {
+            auto [u, s] = history.back();
+            history.pop_back();
+            sz[u] = s;
+            
+            auto [v, p] = history.back();
+            history.pop_back();
+            parent[v] = p;
+            
+            components++;
+        }
+    }
+};
+$0
+]]></content>
+    <tabTrigger>dsurollback</tabTrigger>
+    <scope>source.c++</scope>
+    <description>DSU with Rollback - CPBuddy</description>
+</snippet>

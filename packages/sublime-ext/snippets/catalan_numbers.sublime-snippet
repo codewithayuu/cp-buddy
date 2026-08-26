@@ -1,0 +1,24 @@
+<snippet>
+    <content><![CDATA[
+// Catalan Numbers (Modulo MOD)
+// Time Complexity: O(N)
+const int ${1:MAX} = ${2:200005};
+${3:long long} catalan[${1:MAX}];
+${3:long long} inv[${1:MAX}];
+
+void ${4:precomputeCatalan}() {
+    inv[1] = 1;
+    for (int i = 2; i <= ${1:MAX} + 1; i++) {
+        inv[i] = (${5:MOD} - (${5:MOD} / i) * inv[${5:MOD} % i] % ${5:MOD}) % ${5:MOD};
+    }
+    catalan[0] = catalan[1] = 1;
+    for (int i = 2; i < ${1:MAX}; i++) {
+        catalan[i] = ((2ll * (2 * i - 1) % ${5:MOD}) * catalan[i - 1] % ${5:MOD}) * inv[i + 1] % ${5:MOD};
+    }
+}
+$0
+]]></content>
+    <tabTrigger>catalan</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Catalan Numbers - CPBuddy</description>
+</snippet>

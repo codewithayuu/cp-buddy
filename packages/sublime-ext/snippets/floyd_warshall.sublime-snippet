@@ -1,0 +1,23 @@
+<snippet>
+    <content><![CDATA[
+// Floyd-Warshall Algorithm - O(V^3)
+// All-Pairs Shortest Path.
+void ${1:floyd_warshall}(int ${2:n}, vector<vector<${3:long long}>>& ${4:dist}) {
+    const ${3:long long} INF = ${5:1e18};
+    // ${4:dist}[i][j] should be initialized to weight(i, j) if edge exists, 0 if i == j, and INF otherwise.
+    for (int k = 0; k < ${2:n}; ++k) {
+        for (int i = 0; i < ${2:n}; ++i) {
+            for (int j = 0; j < ${2:n}; ++j) {
+                if (${4:dist}[i][k] < INF && ${4:dist}[k][j] < INF) {
+                    ${4:dist}[i][j] = min(${4:dist}[i][j], ${4:dist}[i][k] + ${4:dist}[k][j]);
+                }
+            }
+        }
+    }
+}
+$0
+]]></content>
+    <tabTrigger>floyd_warshall</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Floyd-Warshall Algorithm (APSP) - CPBuddy</description>
+</snippet>

@@ -1,0 +1,76 @@
+<snippet>
+    <content><![CDATA[
+// Aho-Corasick Automaton
+// Time Complexity: O(sum(L) + N + Matches)
+struct ${1:AhoCorasick} {
+    static const int K = ${2:26}; // Alphabet size
+    struct Vertex {
+        int next[K];
+        bool leaf = false;
+        int p = -1;
+        char pch;
+        int link = -1;
+        int exit_link = -1;
+        vector<int> word_indices; // Indices of words ending here
+        Vertex(int p = -1, char ch = '$') : p(p), pch(ch) {
+            fill(begin(next), end(next), -1);
+        }
+    };
+
+    vector<Vertex> t;
+    
+    ${1:AhoCorasick}() {
+        t.emplace_back(); // Root node
+    }
+
+    void add_string(const string& s, int idx) {
+        int v = 0;
+        for (char ch : s) {
+            int c = ch - '${3:a}'; // Adjust according to alphabet
+            if (t[v].next[c] == -1) {
+                t[v].next[c] = t.size();
+                t.emplace_back(v, ch);
+            }
+            v = t[v].next[c];
+        }
+        t[v].leaf = true;
+        t[v].word_indices.push_back(idx);
+    }
+
+    void build() {
+        queue<int> q;
+        q.push(0);
+        while (!q.empty()) {
+            int v = q.front();
+            q.pop();
+            // Compute suffix link
+            if (v == 0 || t[v].p == 0) {
+                t[v].link = 0;
+            } else {
+                int link_p = t[t[v].p].link;
+                int c = t[v].pch - '${3:a}';
+                while (link_p != -1 && t[link_p].next[c] == -1) {
+                    if (link_p == 0) { link_p = -1; break; }
+                    link_p = t[link_p].link;
+                }
+                t[v].link = (link_p == -1) ? 0 : t[link_p].next[c];
+            }
+            // Compute exit link
+            if (v != 0) {
+                int l = t[v].link;
+                t[v].exit_link = t[l].leaf ? l : t[l].exit_link;
+            }
+            for (int c = 0; c < K; c++) {
+                if (t[v].next[c] != -1) {
+                    q.push(t[v].next[c]);
+                }
+            }
+        }
+    }
+};
+$0
+]]></content>
+    <tabTrigger>aho_corasick</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Aho-Corasick Automaton - CPBuddy</description>
+</snippet>

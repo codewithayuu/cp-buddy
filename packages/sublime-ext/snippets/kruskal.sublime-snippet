@@ -1,0 +1,52 @@
+<snippet>
+    <content><![CDATA[
+// Kruskal's Algorithm for Minimum Spanning Tree - O(E log E)
+struct ${1:DSU} {
+    vector<int> parent, rank;
+    ${1:DSU}(int n) {
+        parent.resize(n);
+        rank.assign(n, 0);
+        iota(parent.begin(), parent.end(), 0);
+    }
+    int find(int v) {
+        if (v == parent[v]) return v;
+        return parent[v] = find(parent[v]);
+    }
+    bool unite(int a, int b) {
+        a = find(a);
+        b = find(b);
+        if (a != b) {
+            if (rank[a] < rank[b]) swap(a, b);
+            parent[b] = a;
+            if (rank[a] == rank[b]) rank[a]++;
+            return true;
+        }
+        return false;
+    }
+};
+
+struct ${2:Edge} {
+    int u, v;
+    ${3:long long} weight;
+    bool operator<(${2:Edge} const& other) {
+        return weight < other.weight;
+    }
+};
+
+${3:long long} ${4:kruskal}(int n, vector<${2:Edge}>& edges) {
+    ${3:long long} cost = 0;
+    sort(edges.begin(), edges.end());
+    ${1:DSU} dsu(n);
+    for (${2:Edge} e : edges) {
+        if (dsu.unite(e.u, e.v)) {
+            cost += e.weight;
+        }
+    }
+    return cost;
+}
+$0
+]]></content>
+    <tabTrigger>kruskal</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Kruskal's MST with DSU - CPBuddy</description>
+</snippet>

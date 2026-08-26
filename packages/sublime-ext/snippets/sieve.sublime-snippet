@@ -1,0 +1,18 @@
+<snippet>
+    <content><![CDATA[
+// Sieve of Eratosthenes - O(N log log N)
+int ${1:n} = ${2:MAXN};
+vector<bool> ${3:is_prime}(${1:n} + 1, true);
+${3:is_prime}[0] = ${3:is_prime}[1] = false;
+for (int i = 2; i * i <= ${1:n}; i++) {
+    if (${3:is_prime}[i]) {
+        for (int j = i * i; j <= ${1:n}; j += i)
+            ${3:is_prime}[j] = false;
+    }
+}
+$0
+]]></content>
+    <tabTrigger>sieve</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Sieve of Eratosthenes - CPBuddy</description>
+</snippet>

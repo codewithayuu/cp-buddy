@@ -1,0 +1,34 @@
+<snippet>
+    <content><![CDATA[
+// Dijkstra's Algorithm (Standard) - O((V + E) log V)
+// Finds the shortest path from a source node to all other nodes.
+void ${1:dijkstra}(int ${2:source}, int ${3:n}, const vector<vector<pair<${4:int}, ${5:long long}>>>& ${6:adj}, vector<${5:long long}>& ${7:dist}) {
+    const ${5:long long} INF = ${8:1e18};
+    ${7:dist}.assign(${3:n}, INF);
+    ${7:dist}[${2:source}] = 0;
+    priority_queue<pair<${5:long long}, ${4:int}>, vector<pair<${5:long long}, ${4:int}>>, greater<pair<${5:long long}, ${4:int}>>> pq;
+    pq.push({0, ${2:source}});
+
+    while (!pq.empty()) {
+        auto [d, u] = pq.top();
+        pq.pop();
+
+        if (d > ${7:dist}[u]) continue;
+
+        for (auto& edge : ${6:adj}[u]) {
+            ${4:int} v = edge.first;
+            ${5:long long} weight = edge.second;
+
+            if (${7:dist}[u] + weight < ${7:dist}[v]) {
+                ${7:dist}[v] = ${7:dist}[u] + weight;
+                pq.push({${7:dist}[v], v});
+            }
+        }
+    }
+}
+$0
+]]></content>
+    <tabTrigger>dijkstra</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Dijkstra's Algorithm (Standard) - CPBuddy</description>
+</snippet>

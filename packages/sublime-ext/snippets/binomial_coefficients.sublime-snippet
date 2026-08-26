@@ -1,0 +1,28 @@
+<snippet>
+    <content><![CDATA[
+// Binomial Coefficients (nCr % MOD) Precomputation
+// Time Complexity: O(N) precomputation, O(1) per query
+const int ${1:MAX} = ${2:200005};
+${3:long long} fact[${1:MAX}], inv[${1:MAX}], invFact[${1:MAX}];
+
+void ${4:precompute}() {
+    fact[0] = fact[1] = 1;
+    inv[1] = 1;
+    invFact[0] = invFact[1] = 1;
+    for (int i = 2; i < ${1:MAX}; i++) {
+        fact[i] = (fact[i - 1] * i) % ${5:MOD};
+        inv[i] = (${5:MOD} - (${5:MOD} / i) * inv[${5:MOD} % i] % ${5:MOD}) % ${5:MOD};
+        invFact[i] = (invFact[i - 1] * inv[i]) % ${5:MOD};
+    }
+}
+
+${3:long long} ${6:nCr}(int n, int r) {
+    if (r < 0 || r > n) return 0;
+    return fact[n] * invFact[r] % ${5:MOD} * invFact[n - r] % ${5:MOD};
+}
+$0
+]]></content>
+    <tabTrigger>ncr</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Binomial Coefficients (nCr % p) - CPBuddy</description>
+</snippet>

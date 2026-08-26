@@ -1,0 +1,38 @@
+<snippet>
+    <content><![CDATA[
+// Prim's Algorithm for Minimum Spanning Tree - O((V + E) log V)
+${1:long long} prim(int n, const vector<vector<pair<int, ${1:long long}>>>& adj) {
+    const ${1:long long} INF = 1e18;
+    ${1:long long} total_weight = 0;
+    vector<bool> selected(n, false);
+    vector<${1:long long}> min_e(n, INF);
+    min_e[0] = 0;
+    priority_queue<pair<${1:long long}, int>, vector<pair<${1:long long}, int>>, greater<pair<${1:long long}, int>>> pq;
+    pq.push({0, 0});
+
+    while (!pq.empty()) {
+        auto [weight, u] = pq.top();
+        pq.pop();
+
+        if (selected[u]) continue;
+
+        selected[u] = true;
+        total_weight += weight;
+
+        for (auto& edge : adj[u]) {
+            int v = edge.first;
+            ${1:long long} w = edge.second;
+            if (!selected[v] && w < min_e[v]) {
+                min_e[v] = w;
+                pq.push({w, v});
+            }
+        }
+    }
+    return total_weight;
+}
+$0
+]]></content>
+    <tabTrigger>prim</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Prim's MST - CPBuddy</description>
+</snippet>

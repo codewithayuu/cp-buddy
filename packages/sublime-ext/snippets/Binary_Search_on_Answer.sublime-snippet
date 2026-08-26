@@ -1,0 +1,26 @@
+<snippet>
+    <content><![CDATA[
+auto check = [&](long long mid) {
+    // TODO: implement predicate logic for mid
+    // return true if mid is a valid/possible answer
+    $1
+    return false;
+};
+
+long long l = ${2:0}, r = ${3:1e18}, ans = -1;
+while (l <= r) {
+    long long mid = l + (r - l) / 2;
+    if (check(mid)) {
+        ans = mid;
+        // Adjust bounds depending on whether we want min or max answer
+        ${4:l = mid + 1;} // (change to r = mid - 1 to find minimum)
+    } else {
+        ${5:r = mid - 1;} // (change to l = mid + 1 to find minimum)
+    }
+}
+$0
+]]></content>
+    <tabTrigger>binary search on answer</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Binary Search on Answer - CPBuddy</description>
+</snippet>

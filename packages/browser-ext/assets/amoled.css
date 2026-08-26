@@ -1,0 +1,718 @@
+/* AMOLED Dark Theme for Codeforces */
+
+body, p, ul, li, h1, h2, h3, h4, h5, h6,
+.ttypography,
+.ttypography p,
+.ttypography ul,
+.ttypography ol,
+.ttypography li,
+.ttypography h1,
+.ttypography h2,
+.ttypography h3,
+.ttypography h4,
+.ttypography h5,
+.ttypography h6,
+.ttypography div,
+.problem-statement,
+.problem-statement div,
+.problem-statement p,
+.problem-statement ul,
+.problem-statement ol,
+.problem-statement li {
+    background-color: transparent;
+    color: #f8f8f8 !important;
+}
+
+body {
+    background-color: #000000 !important;
+}
+
+#header, #pageContent, #footer, .roundbox {
+    background-color: #000000 !important;
+}
+
+/* Sidebars and rounded boxes */
+.roundbox {
+    border: 1px solid #333 !important;
+}
+
+.roundbox .rtop, .roundbox .rbottom {
+    display: none !important; /* Hide weird borders */
+}
+
+/* Links (excluding Codeforces usernames so they keep default rating colors) */
+a:not(.rated-user):link { color: #4fc3f7 !important; } /* Bright light blue */
+a:not(.rated-user):visited { color: #4dd0e1 !important; } /* Bright cyan */
+a:not(.rated-user):hover { color: #81d4fa !important; }
+
+/* Tables and Datatables */
+.datatable, .rtable, table.rtable, table.tex-tabular, .tex-tabular, div.ttypography table, .problem-statement table {
+    background-color: #000000 !important;
+    border: 1px solid #333 !important;
+    color: #f8f8f8 !important;
+}
+.datatable th, .rtable th, table.rtable th, table.tex-tabular th, .tex-tabular th, div.ttypography table th, .problem-statement table th {
+    background-color: #121212 !important;
+    color: #ffffff !important;
+    border-bottom: 1px solid #333 !important;
+}
+.datatable td,
+.datatable tr td,
+.datatable tr.dark,
+.datatable tr.dark td,
+.datatable td.dark,
+.rtable td,
+.rtable tr,
+.rtable tr td,
+.rtable tr.dark,
+.rtable tr.dark td,
+.rtable td.dark,
+table.rtable tbody tr:nth-child(odd),
+table.rtable tbody tr:nth-child(even),
+table.rtable tbody tr td,
+table.tex-tabular td,
+.tex-tabular td,
+div.ttypography table td,
+div.ttypography tbody td,
+div.ttypography th,
+div.ttypography td,
+.problem-statement table td,
+.problem-statement table th,
+.problem-statement table tr {
+    background-color: #000000 !important;
+    border-bottom: 1px solid #222 !important;
+    color: #f8f8f8 !important;
+}
+
+/* Problem statement tables & TeX tabulars (e.g. problem 2173/B) */
+.problem-statement .tex-tabular,
+.tex-tabular,
+table.tex-tabular {
+    background-color: #000000 !important;
+    color: #f8f8f8 !important;
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
+    border: initial !important;
+    margin: 1em auto !important;
+}
+
+.problem-statement .tex-tabular td,
+.problem-statement .tex-tabular th,
+.tex-tabular td,
+.tex-tabular th,
+table.tex-tabular td,
+table.tex-tabular th {
+    background-color: #000000 !important;
+    color: #f8f8f8 !important;
+    padding: 6px 10px !important;
+    vertical-align: middle !important;
+}
+
+.problem-statement .tex-tabular .tex-tabular-border-left,
+.tex-tabular .tex-tabular-border-left {
+    border-left: 1px solid #3a3a3a !important;
+}
+.problem-statement .tex-tabular .tex-tabular-border-right,
+.tex-tabular .tex-tabular-border-right {
+    border-right: 1px solid #3a3a3a !important;
+}
+.problem-statement .tex-tabular .tex-tabular-border-top,
+.tex-tabular .tex-tabular-border-top {
+    border-top: 1px solid #3a3a3a !important;
+}
+.problem-statement .tex-tabular .tex-tabular-border-bottom,
+.tex-tabular .tex-tabular-border-bottom {
+    border-bottom: 1px solid #3a3a3a !important;
+}
+
+/* Highlighted rows (Participated contests, accepted problems) */
+.datatable tr.highlighted-row td,
+.datatable tr.highlighted-row th,
+.rtable tr.highlighted-row td,
+table.rtable tbody tr.highlighted-row td,
+.datatable tr.cpbuddy-row-green td,
+.rtable tr.cpbuddy-row-green td {
+    background-color: #0b2411 !important; /* Very dark green */
+}
+
+/* Normalized inline backgrounds from JS */
+.datatable tr.cpbuddy-row-blue td,
+.rtable tr.cpbuddy-row-blue td {
+    background-color: #0b1a2b !important; /* Very dark blue */
+}
+.datatable tr.cpbuddy-row-highlight td,
+.rtable tr.cpbuddy-row-highlight td {
+    background-color: #1a1a1a !important; /* Dark grey fallback */
+}
+
+/* Active problem row in score table */
+table tr:has(.currentProblem) td,
+table tr:has(.currentProblem),
+td.currentProblem,
+tr.cpbuddy-current-problem td,
+tr.cpbuddy-current-problem {
+    background-color: #0b1a2b !important; /* Very dark blue */
+}
+.currentProblem {
+    background-color: transparent !important;
+}
+
+/* Rejected problems rows */
+.datatable tr.rejected-problem td,
+.rtable tr.rejected-problem td,
+table.rtable tbody tr.rejected-problem td {
+    background-color: #2b0c0c !important; /* Very dark red */
+}
+
+/* Text and Math elements */
+.tex-font-style-tt, .tt, div.ttypography .tt {
+    color: #ffd54f !important;
+    background-color: #1a1a1a !important;
+    padding: 1px 5px !important;
+    border-radius: 3px !important;
+    border: 1px solid #333 !important;
+    font-family: Consolas, "Courier New", monospace !important;
+}
+
+.tex-math, .MathJax, .MathJax *, .MathJax_Preview, .MathJax_Display {
+    background-color: transparent !important;
+    background: transparent !important;
+    color: #f8f8f8 !important;
+}
+
+.MathJax .mi {
+    color: #ffd54f !important; /* Bright amber for variables to stand out */
+}
+
+.MathJax .mo, .MathJax .mn, .MathJax .mtext, .MathJax .ms {
+    color: #f8f8f8 !important;
+}
+
+div.ttypography .MathJax {
+    color: #f8f8f8 !important;
+}
+
+/* Image-based Math Formulas and TeX Graphics (e.g. espresso.codeforces.com, problem 433/B) */
+img.tex-formula,
+.tex-formula,
+img.tex-graphics,
+.tex-graphics,
+.problem-statement img.tex-formula,
+.problem-statement img.tex-graphics,
+.ttypography img.tex-formula,
+.ttypography img.tex-graphics,
+img[src*="espresso.codeforces.com"],
+img[src*="espresso.codeforces.org"],
+img[src*="/espresso/"],
+img[src*="espresso"] {
+    filter: invert(1) brightness(1.2) !important;
+    -webkit-filter: invert(1) brightness(1.2) !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    vertical-align: middle !important;
+}
+
+/* MathJax Context Menu */
+#MathJax_Menu, .MathJax_Menu, .MathJax_MenuFrame {
+    background-color: #1e1e1e !important;
+    border: 1px solid #444 !important;
+    color: #e0e0e0 !important;
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.5) !important;
+}
+.MathJax_MenuItem {
+    background-color: transparent !important;
+    color: #e0e0e0 !important;
+}
+.MathJax_MenuItem:hover {
+    background-color: #333 !important;
+    color: #fff !important;
+}
+.MathJax_MenuArrow, .MathJax_MenuRadioCheck {
+    color: #e0e0e0 !important;
+}
+.MathJax_MenuRule {
+    border-top: 1px solid #444 !important;
+}
+
+/* Problem description specific */
+.problem-statement {
+    color: #ffffff !important;
+    font-size: 15px !important;
+}
+.problem-statement .property-title {
+    color: #81d4fa !important;
+}
+.problem-statement .section-title {
+    color: #fff !important;
+    border-bottom: 1px solid #333 !important;
+}
+.problem-statement .sample-test .title {
+    color: #e0e0e0 !important;
+    background-color: #121212 !important;
+    border: 1px solid #333 !important;
+}
+.problem-statement .sample-test .input,
+.problem-statement .sample-test .output {
+    border: 1px solid #333 !important;
+    background-color: #000000 !important;
+}
+.problem-statement .sample-test pre {
+    background-color: #000000 !important;
+    color: #fff !important;
+    border: none !important;
+    padding: 0 !important;
+}
+.problem-statement .sample-test pre .test-example-line-even {
+    background-color: #1a1a1a !important;
+    color: #fff !important;
+}
+.problem-statement .sample-test pre .test-example-line-odd {
+    background-color: #000000 !important;
+    color: #fff !important;
+}
+.problem-statement .sample-test pre .test-example-line {
+    padding: 0 4px !important;
+}
+
+/* Verdicts */
+.verdict-accepted {
+    color: #39ff14 !important; /* Bright neon green */
+    font-weight: bold;
+}
+.verdict-rejected, .verdict-failed {
+    color: #ff3333 !important; /* Bright crisp red */
+    font-weight: bold;
+}
+
+/* Inputs and Forms */
+input[type="text"], input[type="password"], textarea, select {
+    background-color: #121212 !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #444 !important;
+}
+input[type="submit"], input[type="button"], button {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #444 !important;
+}
+input[type="submit"]:hover, input[type="button"]:hover, button:hover {
+    background-color: #333 !important;
+}
+
+/* Header menu */
+.menu-list-container {
+    background-color: #121212 !important;
+    border: 1px solid #333 !important;
+}
+.menu-list-container ul li a {
+    color: #e0e0e0 !important;
+}
+
+/* Active tab text color (red as requested) */
+.current, 
+.active, 
+.selected,
+.current *, 
+.active *, 
+.selected *,
+.current.rated-user, 
+.active.rated-user, 
+.selected.rated-user,
+.current .rated-user, 
+.active .rated-user, 
+.selected .rated-user,
+li.current a, 
+li.active a, 
+li.selected a,
+li.selectedLava a,
+li.current span, 
+li.active span, 
+li.selected span,
+li.selectedLava span,
+.second-level-menu-list li.current *, 
+.second-level-menu-list li.current *:link, 
+.second-level-menu-list li.current *:visited,
+.second-level-menu-list li.active *,
+.second-level-menu-list li.selected *,
+.second-level-menu-list li.selectedLava *,
+.second-level-menu-list li.selectedLava *:link,
+.second-level-menu-list li.selectedLava *:visited,
+.second-level-menu-list li:hover *,
+.menu-list-container ul li.current *,
+.menu-list-container ul li.active *,
+.menu-list-container ul li.selectedLava *,
+.menu-list-container ul li:hover *,
+.pagination .active,
+.pagination .current,
+.pagination span.active,
+.pagination span.page-index.active {
+    color: #F44336 !important;
+}
+
+/* CPBuddy Live Verdict Badge */
+.cpbuddy-verdict-badge {
+    position: fixed;
+    top: 45px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999999;
+    background-color: #000000;
+    color: #ffffff;
+    padding: 4px 14px;
+    border-radius: 9999px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8);
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: filter 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cpbuddy-verdict-badge:hover {
+    filter: brightness(1.15);
+}
+
+.cpbuddy-verdict-badge.ok {
+    background-color: #000000;
+    color: #50fa7b;
+    border-color: rgba(80, 250, 123, 0.45);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), 0 0 12px rgba(80, 250, 123, 0.2);
+}
+
+.cpbuddy-verdict-badge.pending {
+    background-color: #000000;
+    color: #8be9fd;
+    border-color: rgba(139, 233, 253, 0.45);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), 0 0 12px rgba(139, 233, 253, 0.2);
+}
+
+.cpbuddy-verdict-badge.fail {
+    background-color: #000000;
+    color: #ff5555;
+    border-color: rgba(255, 85, 85, 0.45);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), 0 0 12px rgba(255, 85, 85, 0.2);
+}
+
+
+
+
+/* Miscellaneous CF specific elements */
+.alert-success { background-color: #1b5e20 !important; color: #fff !important; border: 1px solid #2e7d32 !important; }
+.alert-info { background-color: #01579b !important; color: #fff !important; border: 1px solid #0277bd !important; }
+.alert-warning { background-color: #e65100 !important; color: #fff !important; border: 1px solid #ef6c00 !important; }
+.alert-error { background-color: #b71c1c !important; color: #fff !important; border: 1px solid #c62828 !important; }
+
+/* Difficulty Tags */
+.tag-box[style*="red"], [title="Difficulty"][style*="red"] { color: #ff1744 !important; font-weight: bold; } /* Bright Red */
+.tag-box[style*="orange"], [title="Difficulty"][style*="orange"] { color: #ff9100 !important; font-weight: bold; } /* Bright Orange */
+/* Difficulty Tags and any other inline #a0a or blue */
+.tag-box[style*="a0a"], [title="Difficulty"][style*="a0a"], [style*="color: #a0a"], [style*="color:#a0a"] { color: #e040fb !important; font-weight: bold; } /* Bright Violet */
+.tag-box[style*="blue"], [title="Difficulty"][style*="blue"], [style*="color: blue"], [style*="color:blue"], [style*="color: #0000ff"], [style*="color:#0000ff"] { color: #82b1ff !important; font-weight: bold; } /* True Blue */
+.tag-box[style*="03a89e"], [title="Difficulty"][style*="03a89e"] { color: #00e5ff !important; font-weight: bold; } /* Bright Cyan */
+.tag-box[style*="green"], [title="Difficulty"][style*="green"] { color: #39ff14 !important; font-weight: bold; border-color: #39ff14 !important; } /* Bright Neon Green */
+.tag-box[style*="gray"], [title="Difficulty"][style*="gray"] { color: #ffffff !important; font-weight: bold; border-color: #ffffff !important; } /* White instead of grey */
+
+/* Heatmap & Inline Background Color Fixes */
+[style*="background-color: #a0a"], [style*="background-color:#a0a"], [style*="background-color: rgb(170, 0, 170)"] { background-color: #e040fb !important; color: #000 !important; }
+[style*="background-color: blue"], [style*="background-color:blue"], [style*="background-color: #0000ff"], [style*="background-color:#0000ff"], [style*="background-color: rgb(0, 0, 255)"] { background-color: #82b1ff !important; color: #000 !important; }
+[style*="background-color: green"], [style*="background-color:green"], [style*="background-color: #008000"], [style*="background-color:#008000"], [style*="background-color: rgb(0, 128, 0)"] { background-color: #39ff14 !important; color: #000 !important; }
+
+/* Fix Native Codeforces Heatmap empty cells for dark mode */
+/* Empty (Light gray) -> Dark */
+svg rect[fill="#ebedf0" i], svg rect[fill="#eeeeee" i], svg rect[fill="#eaecef" i], svg rect[fill="#f2f2f2" i], svg rect[data-level="0"],
+svg rect[style*="fill: #ebedf0" i], svg rect[style*="fill: #eeeeee" i], svg rect[style*="fill: #eaecef" i], svg rect[style*="fill: #f2f2f2" i],
+svg rect[style*="fill: rgb(235, 237, 240)" i], svg rect[style*="fill: rgb(238, 238, 238)" i] { fill: #161b22 !important; }
+
+/* Bottom links and search container fixes */
+.bottom-links {
+    background-color: #000000 !important;
+    border: none !important;
+}
+
+.bottom-links table, .bottom-links table td {
+    background-color: #000000 !important;
+    color: #f8f8f8 !important;
+    border: none !important;
+}
+
+input.search {
+    background-color: #121212 !important;
+    background-image: none !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #444 !important;
+    padding: 2px 4px;
+}
+
+/* Typography fixes for main feed and problem statements */
+.ttypography,
+.ttypography h1,
+.ttypography h2,
+.ttypography h3,
+.ttypography h4,
+.ttypography h5,
+.ttypography h6,
+.ttypography p,
+.ttypography ul,
+.ttypography ol,
+.ttypography li,
+.ttypography table,
+.ttypography tr,
+.ttypography th,
+.ttypography td,
+.ttypography caption,
+.ttypography center {
+    color: #f8f8f8 !important;
+}
+
+/* Hide grey sliding overlay and all tab backgrounds */
+.backLava, .leftLava, .bottomLava, .cornerLava {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    background: transparent !important;
+}
+
+li.active, li.current, li.selected, li.selectedLava,
+.second-level-menu-list li, .menu-list-container ul li {
+    background: transparent !important;
+    background-color: transparent !important;
+}
+
+/* Hide all old-school white rounded corners from CF */
+.roundbox .rtop, .roundbox .rbottom,
+.roundbox-lt, .roundbox-rt, .roundbox-lb, .roundbox-rb,
+.lt, .rt, .lb, .rb,
+.ilt, .irt, .ilb, .irb,
+.title-bg .rtop, .title-bg .rbottom {
+    display: none !important;
+    background: none !important;
+}
+
+/* Autocomplete Dropdown */
+.ac_results {
+    background-color: #121212 !important;
+    border: 1px solid #333 !important;
+    color: #e0e0e0 !important;
+}
+.ac_even, .ac_odd {
+    background-color: #121212 !important;
+    color: #e0e0e0 !important;
+}
+.ac_over {
+    background-color: #333 !important;
+    color: #fff !important;
+}
+
+/* SumoSelect Custom Selects */
+.SumoSelect > .CaptionCont {
+    background-color: #121212 !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #444 !important;
+}
+.SumoSelect .optWrapper {
+    background-color: #121212 !important;
+    border: 1px solid #444 !important;
+}
+.SumoSelect .optWrapper > .options li.opt {
+    color: #e0e0e0 !important;
+    background-color: #121212 !important;
+    border-bottom: 1px solid #222 !important;
+}
+.SumoSelect .optWrapper > .options li.opt:hover,
+.SumoSelect .optWrapper > .options li.opt.selected {
+    background-color: #333 !important;
+    color: #fff !important;
+}
+
+/* Voting Stars Container */
+ul[id^="vote-list-"] {
+    filter: invert(0.9) hue-rotate(180deg) brightness(1.2);
+}
+
+/* Checkboxes and Radios */
+input[type="checkbox"], input[type="radio"] {
+    filter: invert(0.8) hue-rotate(180deg);
+}
+/* Datatable inner backgrounds and generic inputs */
+.datatable > div {
+    background-color: transparent !important;
+}
+input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]):not([type="hidden"]) {
+    background-color: #121212 !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #444 !important;
+}
+
+/* Problemset accepted/rejected rows */
+.datatable .accepted-problem td,
+.datatable tr.accepted-problem td {
+    background-color: #0a1f0a !important; /* Subtle dark green */
+    border-left: none !important;
+}
+.datatable .accepted-problem td.act,
+.datatable tr.accepted-problem td.act {
+    background-color: #1b5e20 !important; /* Dark parrot green */
+}
+.datatable .accepted-problem td.id.left,
+.datatable tr.accepted-problem td.id.left,
+.datatable .accepted-problem td.left,
+.datatable tr.accepted-problem td.left {
+    border-left: 4px solid #1b5e20 !important;
+}
+
+.datatable .rejected-problem td,
+.datatable tr.rejected-problem td {
+    background-color: #2b0c0c !important; /* Subtle dark red */
+    border-left: none !important;
+}
+
+/* User wants pitch black (normal row colors) specifically on the status pages */
+body.page-status .datatable .accepted-problem td,
+body.page-status .datatable tr.accepted-problem td,
+body.page-status .datatable .rejected-problem td,
+body.page-status .datatable tr.rejected-problem td,
+body.page-status .datatable tr.highlighted-row td,
+body.page-status .datatable tr.highlighted-row th,
+body.page-status .rtable tr.highlighted-row td,
+body.page-status table.rtable tbody tr.highlighted-row td,
+body.page-status .datatable tr.cpbuddy-row-green td,
+body.page-status .rtable tr.cpbuddy-row-green td {
+    background-color: #000000 !important;
+}
+
+.datatable .rejected-problem td.act,
+.datatable tr.rejected-problem td.act {
+    background-color: #b71c1c !important; /* Dark red */
+}
+.datatable .rejected-problem td.id.left,
+.datatable tr.rejected-problem td.id.left,
+.datatable .rejected-problem td.left,
+.datatable tr.rejected-problem td.left {
+    border-left: 4px solid #b71c1c !important;
+}
+
+/* Codeforces User Rating Colors for AMOLED Dark Mode */
+a.user-black, span.user-black, .user-black { color: #ffffff !important; font-weight: bold; }
+a.user-gray, span.user-gray, .user-gray { color: #cccccc !important; font-weight: bold; }
+a.user-green, span.user-green, .user-green { color: #39ff14 !important; font-weight: bold; }
+a.user-cyan, span.user-cyan, .user-cyan { color: #00e5ff !important; font-weight: bold; }
+a.user-blue, span.user-blue, .user-blue { color: #82b1ff !important; font-weight: bold; } /* More true blue instead of cyan */
+a.user-violet, span.user-violet, .user-violet { color: #e040fb !important; font-weight: bold; } /* Lighter Bright Purple */
+a.user-orange, span.user-orange, .user-orange { color: #ff9100 !important; font-weight: bold; }
+a.user-red, span.user-red, .user-red { color: #ff1744 !important; font-weight: bold; }
+a.user-legendary, span.user-legendary, .user-legendary, a.user-3300, span.user-3300, .user-3300, a.user-4000, span.user-4000, .user-4000 { color: #ff1744 !important; font-weight: bold; }
+a.user-legendary::first-letter, span.user-legendary::first-letter, .user-legendary::first-letter, a.user-3300::first-letter, span.user-3300::first-letter, .user-3300::first-letter, a.user-4000::first-letter, span.user-4000::first-letter, .user-4000::first-letter { color: #ffffff !important; }
+a.user-admin, span.user-admin, .user-admin { color: #ffffff !important; font-weight: bold; }
+
+/* Modals and Popups (Submission Viewer) */
+#facebox .popup, #facebox .content, #facebox .b, #facebox .tl, #facebox .tr, #facebox .bl, #facebox .br,
+.colorbox, .window, .source-popup, .source-viewer, .dialog {
+    background-color: #121212 !important;
+    border: 1px solid #333 !important;
+    color: #e0e0e0 !important;
+    background-image: none !important;
+}
+#facebox_overlay {
+    background-color: #000 !important;
+    opacity: 0.8 !important;
+}
+#facebox .close, .close {
+    filter: invert(1) brightness(2);
+}
+
+/* Code Blocks and Monokai Syntax Highlighting */
+pre, code, .program-source, .prettyprint, pre.prettyprint, div.source-view {
+    background-color: #1e1e1e !important;
+    border: 1px solid #333 !important;
+    color: #f8f8f2 !important;
+}
+/* Monokai Colors for Google Code Prettify */
+.pln { color: #f8f8f2 !important; } /* Plain text */
+.str { color: #e6db74 !important; } /* String */
+.kwd { color: #f92672 !important; } /* Keyword */
+.com { color: #75715e !important; font-style: italic !important; } /* Comment */
+.typ { color: #66d9ef !important; } /* Type */
+.lit { color: #ae81ff !important; } /* Literal */
+.pun { color: #f8f8f2 !important; } /* Punctuation */
+.opn { color: #f8f8f2 !important; } /* Open brace */
+.clo { color: #f8f8f2 !important; } /* Close brace */
+.tag { color: #f92672 !important; } /* Tag */
+.atn { color: #a6e22e !important; } /* Attribute name */
+.atv { color: #e6db74 !important; } /* Attribute value */
+.dec { color: #a6e22e !important; } /* Declaration */
+.var { color: #f8f8f2 !important; } /* Variable */
+.fun { color: #a6e22e !important; } /* Function */
+
+ol.linenums { 
+    background-color: #1e1e1e !important; 
+    color: #75715e !important; 
+}
+li.L0, li.L1, li.L2, li.L3, li.L4, li.L5, li.L6, li.L7, li.L8, li.L9 { 
+    background-color: transparent !important;
+    list-style-type: decimal !important;
+}
+
+/* Fix all bright white/grey borders in sidebars, tables, and lists */
+.rtable, .rtable th, .rtable td, table.rtable,
+.table-form, .table-form th, .table-form td,
+.datatable th, .datatable td,
+.titled, .caption,
+.roundbox ul li, .list-with-icons li,
+table th, table td {
+    border-color: #333 !important;
+}
+
+/* Fix sidebar list hover bright backgrounds */
+.roundbox ul li:hover, .list-with-icons li:hover, .sidebar-menu ul li:hover {
+    background-color: #1a1a1a !important;
+}
+
+/* Fix dark blue heading text on black background */
+.caption, .titled, .roundbox .caption, .roundbox .titled {
+    color: #82b1ff !important;
+}
+
+/* File Upload Browse Button */
+input[type="file"]::file-selector-button,
+input[type="file"]::-webkit-file-upload-button {
+    background-color: #1a1a1a !important;
+    color: #f8f8f8 !important;
+    border: 1px solid #444 !important;
+    border-radius: 4px !important;
+    padding: 4px 8px !important;
+    cursor: pointer !important;
+}
+input[type="file"]::file-selector-button:hover,
+input[type="file"]::-webkit-file-upload-button:hover {
+    background-color: #333 !important;
+}
+
+/* Invert colors of small native icon images (like the delete cross in sidebar) */
+img.delete-resource-link {
+    filter: invert(1) hue-rotate(180deg) !important;
+}
+
+/* Dark Theme for Embedded Google Calendars (used on /calendar) */
+iframe[src*="calendar.google.com"],
+iframe[src*="www.google.com/calendar"] {
+    filter: invert(0.92) hue-rotate(180deg) contrast(1.05) !important;
+    border-radius: 4px;
+}
+
+/* Codeforces Rating Chart Tooltip */
+#tooltip, .flotTip, #flot-tooltip, div[id^="flot-tooltip"] {
+    background-color: rgba(26, 26, 26, 0.75) !important;
+    backdrop-filter: blur(6px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.7) !important;
+    opacity: 1 !important;
+    border-radius: 4px;
+    padding: 8px !important;
+}

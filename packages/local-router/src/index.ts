@@ -271,10 +271,12 @@ const startServer = () => {
         activeBrowserId = nextSocket || null;
       }
       refreshAllStatus();
-      const editorClientsCount = io.sockets.adapter.rooms.get('editor-clients')?.size ?? 0;
-      if (editorClientsCount === 0) {
-        info(`No clients connected, shutting down router`);
-        stopServer();
+      if (type === 'editor') {
+        const editorClientsCount = io.sockets.adapter.rooms.get('editor-clients')?.size ?? 0;
+        if (editorClientsCount === 0) {
+          info(`No editor clients connected, shutting down router`);
+          stopServer();
+        }
       }
     });
   });

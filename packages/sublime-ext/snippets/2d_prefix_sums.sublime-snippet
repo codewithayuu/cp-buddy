@@ -1,0 +1,20 @@
+<snippet>
+    <content><![CDATA[
+// 2D Prefix Sums - O(N*M) build, O(1) query
+// Note: 1-indexed for both array and queries
+vector<vector<${1:long long}>> ${2:pref}(${3:N} + 1, vector<${1:long long}>(${4:M} + 1, 0));
+for (int i = 1; i <= ${3:N}; ++i) {
+    for (int j = 1; j <= ${4:M}; ++j) {
+        ${2:pref}[i][j] = ${5:a}[i][j] + ${2:pref}[i - 1][j] + ${2:pref}[i][j - 1] - ${2:pref}[i - 1][j - 1];
+    }
+}
+
+auto ${6:query} = [&](int r1, int c1, int r2, int c2) {
+    return ${2:pref}[r2][c2] - ${2:pref}[r1 - 1][c2] - ${2:pref}[r2][c1 - 1] + ${2:pref}[r1 - 1][c1 - 1];
+};
+$0
+]]></content>
+    <tabTrigger>pref2d</tabTrigger>
+    <scope>source.c++</scope>
+    <description>2D Prefix Sums - CPBuddy</description>
+</snippet>

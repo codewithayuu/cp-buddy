@@ -3,8 +3,9 @@ IndentWidth: 4
 TabWidth: 4
 UseTab: Never
 ColumnLimit: 120
-AllowShortIfStatementsOnASingleLine: WithoutElse
-AllowShortLoopsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Inline
 BreakBeforeBraces: Attach
 SpaceBeforeParens: ControlStatements
+RemoveBracesLLVM: true

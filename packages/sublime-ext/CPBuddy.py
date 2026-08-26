@@ -10,6 +10,83 @@ import time
 import gzip
 import uuid
 
+CPBUDDY_SNIPPETS = [
+    {
+        "name": "Binary Search",
+        "description": "Standard binary search for an element in a sorted array",
+        "code": """\
+// ${1:target} is the element to find, ${2:n} is the size of the array ${3:arr}
+int l = 0, r = ${2:n} - 1, ans = -1;
+while (l <= r) {
+    int mid = l + (r - l) / 2;
+    if (${3:arr}[mid] == ${1:target}) {
+        ans = mid;
+        break; // found the element
+    } else if (${3:arr}[mid] < ${1:target}) {
+        l = mid + 1;
+    } else {
+        r = mid - 1;
+    }
+}
+// ans is the index, or -1 if not found
+$0"""
+    },
+    {
+        "name": "Binary Search on Answer",
+        "description": "Monotonic predicate binary search template",
+        "code": """\
+auto check = [&](long long mid) {
+    // TODO: implement predicate logic for mid
+    // return true if mid is a valid/possible answer
+    $1
+    return false;
+};
+
+long long l = ${2:0}, r = ${3:1e18}, ans = -1;
+while (l <= r) {
+    long long mid = l + (r - l) / 2;
+    if (check(mid)) {
+        ans = mid;
+        // Adjust bounds depending on whether we want min or max answer
+        ${4:l = mid + 1;} // (change to r = mid - 1 to find minimum)
+    } else {
+        ${5:r = mid - 1;} // (change to l = mid + 1 to find minimum)
+    }
+}
+$0"""
+    },
+    {
+        "name": "GCD (Greatest Common Divisor)",
+        "description": "Calculate GCD of two numbers (Euclidean algorithm)",
+        "code": """\
+long long gcd(long long a, long long b) {
+    while (b) {
+        a %= b;
+        swap(a, b);
+    }
+    return a;
+}
+$0"""
+    },
+    {
+        "name": "Fast Exponentiation (Modular)",
+        "description": "Calculate (a^b) % mod efficiently in O(log b)",
+        "code": """\
+long long binpow(long long a, long long b, long long mod = ${1:1e9+7}) {
+    long long res = 1;
+    a %= mod;
+    while (b > 0) {
+        if (b & 1)
+            res = res * a % mod;
+        a = a * a % mod;
+        b >>= 1;
+    }
+    return res;
+}
+$0"""
+    }
+]
+
 router_process = None
 polling_thread = None
 is_stopping = False
@@ -227,7 +304,7 @@ def create_problem_view(payload):
 
         # 6. Apply Split-Pane Layout
         window.set_layout({
-            "cols": [0.0, 0.5, 1.0],
+            "cols": [0.0, 0.7, 1.0],
             "rows": [0.0, 0.3, 0.6, 1.0],
             "cells": [
                 [0, 0, 1, 3], # Group 0: Left (Code)
@@ -348,7 +425,7 @@ class CpbuddyTestcasesCommand(sublime_plugin.TextCommand):
 
                 # Compile silently
                 compile_proc = subprocess.Popen(
-                    ["g++", "-O2", "-std=c++17", filepath, "-o", binary_path],
+                    ["g++", "-O2", "-std=c++23", filepath, "-o", binary_path],
                     stdout=subprocess.PIPE, stderr=subprocess.PIPE
                 )
                 c_out, c_err = compile_proc.communicate()
@@ -710,6 +787,13 @@ class CpbuddyEventListener(sublime_plugin.EventListener):
                     
         if needs_focus_return:
             window.focus_view(view)
+
+
+
+class CpbuddySnippetsCommand(sublime_plugin.TextCommand):
+    def run(self, edit):
+        # The user wants the native inline autocomplete menu to open when pressing the shortcut
+        self.view.run_command("auto_complete")
 
 def plugin_loaded():
     global is_stopping, polling_thread

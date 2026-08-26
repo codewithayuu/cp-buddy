@@ -1,0 +1,57 @@
+<snippet>
+    <content><![CDATA[
+struct ${1:Node} {
+    ${2:int} ${3:sum}; // $4 Node data
+    int l, r;
+};
+
+struct ${5:PersistentSegTree} {
+    vector<${1:Node}> tree;
+    vector<int> roots;
+    
+    ${5:PersistentSegTree}() {
+        tree.push_back({0, 0, 0}); // 1-based indexing for nodes, 0 is dummy
+        roots.push_back(0); // Version 0 is empty
+    }
+    
+    int build(int l, int r) {
+        int id = tree.size();
+        tree.push_back({0, 0, 0});
+        if (l == r) return id;
+        int mid = l + (r - l) / 2;
+        tree[id].l = build(l, mid);
+        tree[id].r = build(mid + 1, r);
+        return id;
+    }
+    
+    int update(int prev_node, int l, int r, int idx, ${2:int} val) {
+        int id = tree.size();
+        tree.push_back(tree[prev_node]); // copy previous node
+        if (l == r) {
+            tree[id].${3:sum} += val; // $6 Update operation
+            return id;
+        }
+        int mid = l + (r - l) / 2;
+        if (idx <= mid) {
+            tree[id].l = update(tree[prev_node].l, l, mid, idx, val);
+        } else {
+            tree[id].r = update(tree[prev_node].r, mid + 1, r, idx, val);
+        }
+        tree[id].${3:sum} = tree[tree[id].l].${3:sum} + tree[tree[id].r].${3:sum};
+        return id;
+    }
+    
+    ${2:int} query(int node, int l, int r, int ql, int qr) {
+        if (ql > r || qr < l || !node) return 0;
+        if (ql <= l && r <= qr) return tree[node].${3:sum};
+        int mid = l + (r - l) / 2;
+        return query(tree[node].l, l, mid, ql, qr) + 
+               query(tree[node].r, mid + 1, r, ql, qr);
+    }
+};
+$0
+]]></content>
+    <tabTrigger>psegtree</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Persistent Segment Tree - CPBuddy</description>
+</snippet>

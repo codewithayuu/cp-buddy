@@ -1,0 +1,42 @@
+<snippet>
+    <content><![CDATA[
+template<typename ${1:T}>
+struct ${2:FenwickTree} {
+    int n;
+    vector<${1:T}> bit;
+    
+    ${2:FenwickTree}(int n) : n(n), bit(n + 1, 0) {}
+    ${2:FenwickTree}(const vector<${1:T}>& a) {
+        n = a.size();
+        bit.assign(n + 1, 0);
+        for (int i = 0; i < n; i++) update(i + 1, a[i]);
+    }
+    
+    // O(log N) - Add val to index idx (1-based)
+    void update(int idx, ${1:T} val) {
+        for (; idx <= n; idx += idx & -idx) {
+            bit[idx] += val; // ${3:Change operation here}
+        }
+    }
+    
+    // O(log N) - Query prefix sum [1, idx]
+    ${1:T} query(int idx) {
+        ${1:T} res = ${4:0}; // Identity value
+        for (; idx > 0; idx -= idx & -idx) {
+            res += bit[idx]; // ${5:Change operation here}
+        }
+        return res;
+    }
+    
+    // O(log N) - Query range sum [l, r] (1-based)
+    ${1:T} query(int l, int r) {
+        if (l > r) return 0;
+        return query(r) - query(l - 1);
+    }
+};
+$0
+]]></content>
+    <tabTrigger>fenwick</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Fenwick Tree (Binary Indexed Tree) - CPBuddy</description>
+</snippet>

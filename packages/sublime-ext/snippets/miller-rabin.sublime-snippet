@@ -1,0 +1,47 @@
+<snippet>
+    <content><![CDATA[
+// Miller-Rabin Primality Test - O(k log^3 n)
+using ${1:u64} = uint64_t;
+using ${2:u128} = __uint128_t;
+
+${1:u64} ${3:binpow}(${1:u64} base, ${1:u64} exp, ${1:u64} mod) {
+    ${1:u64} res = 1;
+    base %= mod;
+    while (exp > 0) {
+        if (exp % 2 == 1) res = (${2:u128})res * base % mod;
+        base = (${2:u128})base * base % mod;
+        exp /= 2;
+    }
+    return res;
+}
+
+bool ${4:check_composite}(${1:u64} n, ${1:u64} a, ${1:u64} d, int s) {
+    ${1:u64} x = ${3:binpow}(a, d, n);
+    if (x == 1 || x == n - 1) return false;
+    for (int r = 1; r < s; r++) {
+        x = (${2:u128})x * x % n;
+        if (x == n - 1) return false;
+    }
+    return true;
+}
+
+bool ${5:miller_rabin}(${1:u64} n) {
+    if (n < 2) return false;
+    int r = 0;
+    ${1:u64} d = n - 1;
+    while ((d & 1) == 0) {
+        d >>= 1;
+        r++;
+    }
+    for (int a : {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37}) {
+        if (n == a) return true;
+        if (${4:check_composite}(n, a, d, r)) return false;
+    }
+    return true;
+}
+$0
+]]></content>
+    <tabTrigger>miller_rabin</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Miller-Rabin Primality Test - CPBuddy</description>
+</snippet>

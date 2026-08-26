@@ -1,0 +1,45 @@
+<snippet>
+    <content><![CDATA[
+// Manacher's Algorithm
+// Finds the longest palindromic substring in O(N) time.
+// d1[i] = length of longest odd palindrome centered at i
+// d2[i] = length of longest even palindrome centered at i
+vector<int> ${1:manacher_odd}(const string& ${2:s}) {
+    int n = ${2:s}.size();
+    vector<int> d1(n, 0);
+    for (int i = 0, l = 0, r = -1; i < n; i++) {
+        int k = (i > r) ? 1 : min(d1[l + r - i], r - i + 1);
+        while (0 <= i - k && i + k < n && ${2:s}[i - k] == ${2:s}[i + k]) {
+            k++;
+        }
+        d1[i] = k--;
+        if (i + k > r) {
+            l = i - k;
+            r = i + k;
+        }
+    }
+    return d1;
+}
+
+vector<int> ${3:manacher_even}(const string& ${2:s}) {
+    int n = ${2:s}.size();
+    vector<int> d2(n, 0);
+    for (int i = 0, l = 0, r = -1; i < n; i++) {
+        int k = (i > r) ? 0 : min(d2[l + r - i + 1], r - i + 1);
+        while (0 <= i - k - 1 && i + k < n && ${2:s}[i - k - 1] == ${2:s}[i + k]) {
+            k++;
+        }
+        d2[i] = k--;
+        if (i + k > r) {
+            l = i - k - 1;
+            r = i + k;
+        }
+    }
+    return d2;
+}
+$0
+]]></content>
+    <tabTrigger>manacher</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Manacher's Algorithm - CPBuddy</description>
+</snippet>

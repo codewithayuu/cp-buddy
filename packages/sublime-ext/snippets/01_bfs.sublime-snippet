@@ -1,0 +1,35 @@
+<snippet>
+    <content><![CDATA[
+// 0-1 BFS - O(V + E)
+// Computes shortest path where edge weights are 0 or 1.
+void ${1:bfs_01}(int ${2:source}, int ${3:n}, const vector<vector<pair<${4:int}, ${5:int}>>>& ${6:adj}, vector<${7:int}>& ${8:dist}) {
+    const ${7:int} INF = 1e9;
+    ${8:dist}.assign(${3:n}, INF);
+    deque<${4:int}> dq;
+    ${8:dist}[${2:source}] = 0;
+    dq.push_front(${2:source});
+
+    while (!dq.empty()) {
+        ${4:int} u = dq.front();
+        dq.pop_front();
+
+        for (auto& edge : ${6:adj}[u]) {
+            ${4:int} v = edge.first;
+            ${5:int} weight = edge.second; // Must be 0 or 1
+            if (${8:dist}[u] + weight < ${8:dist}[v]) {
+                ${8:dist}[v] = ${8:dist}[u] + weight;
+                if (weight == 0) {
+                    dq.push_front(v);
+                } else {
+                    dq.push_back(v);
+                }
+            }
+        }
+    }
+}
+$0
+]]></content>
+    <tabTrigger>01bfs</tabTrigger>
+    <scope>source.c++</scope>
+    <description>0-1 BFS - CPBuddy</description>
+</snippet>

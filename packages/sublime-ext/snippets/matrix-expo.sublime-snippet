@@ -1,0 +1,38 @@
+<snippet>
+    <content><![CDATA[
+// Matrix Exponentiation - O(size^3 log k)
+template<typename ${1:T}>
+struct ${2:Matrix} {
+    int r, c;
+    vector<vector<${1:T}>> mat;
+    ${2:Matrix}(int r, int c) : r(r), c(c), mat(r, vector<${1:T}>(c, 0)) {}
+    ${2:Matrix} operator*(const ${2:Matrix} &other) const {
+        ${2:Matrix} res(r, other.c);
+        for (int i = 0; i < r; i++) {
+            for (int k = 0; k < c; k++) {
+                for (int j = 0; j < other.c; j++) {
+                    res.mat[i][j] = (res.mat[i][j] + mat[i][k] * other.mat[k][j]) % ${3:MOD};
+                }
+            }
+        }
+        return res;
+    }
+};
+
+template<typename ${1:T}>
+${2:Matrix}<${1:T}> ${4:power}(${2:Matrix}<${1:T}> a, ${5:long long} b) {
+    ${2:Matrix}<${1:T}> res(a.r, a.c);
+    for (int i = 0; i < a.r; i++) res.mat[i][i] = 1; // Identity matrix
+    while (b > 0) {
+        if (b & 1) res = res * a;
+        a = a * a;
+        b >>= 1;
+    }
+    return res;
+}
+$0
+]]></content>
+    <tabTrigger>matrix_expo</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Matrix Exponentiation - CPBuddy</description>
+</snippet>

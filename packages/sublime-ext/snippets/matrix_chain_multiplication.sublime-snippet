@@ -1,0 +1,26 @@
+<snippet>
+    <content><![CDATA[
+// Matrix Chain Multiplication - O(N^3)
+// dp[i][j] = min cost to multiply matrices i to j
+// dimensions of matrix i are dims[i-1] x dims[i]
+int ${1:mcm}(const vector<int>& ${2:dims}) {
+    int n = ${2:dims}.size() - 1;
+    vector<vector<int>> dp(n + 1, vector<int>(n + 1, 0));
+    for (int len = 2; len <= n; ++len) {
+        for (int i = 1; i <= n - len + 1; ++i) {
+            int j = i + len - 1;
+            dp[i][j] = ${3:1e9};
+            for (int k = i; k < j; ++k) {
+                int cost = dp[i][k] + dp[k + 1][j] + ${2:dims}[i - 1] * ${2:dims}[k] * ${2:dims}[j];
+                dp[i][j] = min(dp[i][j], cost);
+            }
+        }
+    }
+    return dp[1][n];
+}
+$0
+]]></content>
+    <tabTrigger>mcm</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Matrix Chain Multiplication - CPBuddy</description>
+</snippet>
